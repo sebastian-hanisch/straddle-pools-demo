@@ -1,7 +1,6 @@
 # Straddle Carrier: Pools, Abhängigkeiten und getrennte Rechnung – Streamlit-Demo
 
-<!-- TODO nach dem Deploy: direkt hierher den Live-Link setzen (Leerzeile davor und danach):
-**[→ Demo live ausprobieren](https://sebastianhanisch-straddle-pools-demo.streamlit.app/)** -->
+**[→ Demo live ausprobieren](https://sebastianhanisch-straddle-pools-demo.streamlit.app/)**
 
 Fall-Demo für die Website „Sebastian Hanisch – Operations Research und Machine Learning“ (`demos.html`). Straddle Carrier (SC) fahren Container zwischen Kran und Stapelplatz im Yard eines Containerterminals.
 Jeder Kran hat eine feste Warteschlange von Aufträgen mit Richtzeiten; die SC sind in **Pools** festen Kränen zugeordnet. Die Demo plant dieselbe erzeugte Instanz mit sieben Verfahren und beantwortet drei Fragen:
