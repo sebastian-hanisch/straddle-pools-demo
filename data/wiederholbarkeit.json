@@ -1,0 +1,1222 @@
+{
+ "meta": {
+  "date": "16.11.2026",
+  "solver_seeds": [
+   1,
+   2,
+   3
+  ],
+  "time_limit": 10,
+  "workers": 1
+ },
+ "scenarios": {
+  "Kleiner Hafen": {
+   "records": [
+    {
+     "seed": 1000,
+     "g2": 905,
+     "g2_proven": true,
+     "p0": [
+      1905,
+      2067,
+      2271
+     ],
+     "p1": [
+      905,
+      905,
+      1151
+     ],
+     "pools_proven": [
+      true,
+      true,
+      true
+     ]
+    },
+    {
+     "seed": 1001,
+     "g2": 120,
+     "g2_proven": true,
+     "p0": [
+      120,
+      120,
+      120
+     ],
+     "p1": [
+      120,
+      120,
+      120
+     ],
+     "pools_proven": [
+      true,
+      true,
+      true
+     ]
+    },
+    {
+     "seed": 1002,
+     "g2": 216,
+     "g2_proven": true,
+     "p0": [
+      216,
+      216,
+      216
+     ],
+     "p1": [
+      216,
+      216,
+      216
+     ],
+     "pools_proven": [
+      true,
+      true,
+      true
+     ]
+    },
+    {
+     "seed": 1003,
+     "g2": 382,
+     "g2_proven": true,
+     "p0": [
+      382,
+      382,
+      382
+     ],
+     "p1": [
+      382,
+      382,
+      382
+     ],
+     "pools_proven": [
+      true,
+      true,
+      true
+     ]
+    },
+    {
+     "seed": 1004,
+     "g2": 777,
+     "g2_proven": true,
+     "p0": [
+      777,
+      777,
+      777
+     ],
+     "p1": [
+      777,
+      777,
+      777
+     ],
+     "pools_proven": [
+      true,
+      true,
+      true
+     ]
+    },
+    {
+     "seed": 1005,
+     "g2": 630,
+     "g2_proven": true,
+     "p0": [
+      630,
+      630,
+      630
+     ],
+     "p1": [
+      630,
+      630,
+      630
+     ],
+     "pools_proven": [
+      true,
+      true,
+      true
+     ]
+    },
+    {
+     "seed": 1006,
+     "g2": 2111,
+     "g2_proven": false,
+     "p0": [
+      9486,
+      10825,
+      12051
+     ],
+     "p1": [
+      3946,
+      3224,
+      3776
+     ],
+     "pools_proven": [
+      true,
+      true,
+      true
+     ]
+    },
+    {
+     "seed": 1007,
+     "g2": 681,
+     "g2_proven": true,
+     "p0": [
+      1377,
+      3371,
+      3093
+     ],
+     "p1": [
+      681,
+      681,
+      681
+     ],
+     "pools_proven": [
+      true,
+      true,
+      true
+     ]
+    },
+    {
+     "seed": 1008,
+     "g2": 2007,
+     "g2_proven": true,
+     "p0": [
+      9894,
+      9330,
+      9932
+     ],
+     "p1": [
+      2007,
+      2007,
+      2007
+     ],
+     "pools_proven": [
+      true,
+      true,
+      true
+     ]
+    },
+    {
+     "seed": 1009,
+     "g2": 0,
+     "g2_proven": true,
+     "p0": [
+      0,
+      0,
+      0
+     ],
+     "p1": [
+      0,
+      0,
+      0
+     ],
+     "pools_proven": [
+      true,
+      true,
+      true
+     ]
+    },
+    {
+     "seed": 1010,
+     "g2": 97,
+     "g2_proven": true,
+     "p0": [
+      139,
+      139,
+      139
+     ],
+     "p1": [
+      97,
+      97,
+      97
+     ],
+     "pools_proven": [
+      true,
+      true,
+      true
+     ]
+    },
+    {
+     "seed": 1011,
+     "g2": 1146,
+     "g2_proven": true,
+     "p0": [
+      16741,
+      17419,
+      19337
+     ],
+     "p1": [
+      7009,
+      7009,
+      7009
+     ],
+     "pools_proven": [
+      true,
+      true,
+      true
+     ]
+    },
+    {
+     "seed": 1012,
+     "g2": 938,
+     "g2_proven": true,
+     "p0": [
+      938,
+      938,
+      938
+     ],
+     "p1": [
+      938,
+      938,
+      938
+     ],
+     "pools_proven": [
+      true,
+      true,
+      true
+     ]
+    },
+    {
+     "seed": 1013,
+     "g2": 464,
+     "g2_proven": true,
+     "p0": [
+      846,
+      464,
+      846
+     ],
+     "p1": [
+      464,
+      464,
+      464
+     ],
+     "pools_proven": [
+      true,
+      true,
+      true
+     ]
+    },
+    {
+     "seed": 1014,
+     "g2": 1987,
+     "g2_proven": true,
+     "p0": [
+      8228,
+      7670,
+      8840
+     ],
+     "p1": [
+      2125,
+      2125,
+      1987
+     ],
+     "pools_proven": [
+      true,
+      true,
+      true
+     ]
+    },
+    {
+     "seed": 1015,
+     "g2": 0,
+     "g2_proven": true,
+     "p0": [
+      36,
+      36,
+      120
+     ],
+     "p1": [
+      0,
+      0,
+      0
+     ],
+     "pools_proven": [
+      true,
+      true,
+      true
+     ]
+    },
+    {
+     "seed": 1016,
+     "g2": 270,
+     "g2_proven": true,
+     "p0": [
+      270,
+      270,
+      270
+     ],
+     "p1": [
+      270,
+      270,
+      270
+     ],
+     "pools_proven": [
+      true,
+      true,
+      true
+     ]
+    },
+    {
+     "seed": 1017,
+     "g2": 0,
+     "g2_proven": true,
+     "p0": [
+      0,
+      0,
+      0
+     ],
+     "p1": [
+      0,
+      0,
+      0
+     ],
+     "pools_proven": [
+      true,
+      true,
+      true
+     ]
+    },
+    {
+     "seed": 1018,
+     "g2": 719,
+     "g2_proven": true,
+     "p0": [
+      6640,
+      19888,
+      11268
+     ],
+     "p1": [
+      3600,
+      4422,
+      3624
+     ],
+     "pools_proven": [
+      true,
+      true,
+      true
+     ]
+    },
+    {
+     "seed": 1019,
+     "g2": 1312,
+     "g2_proven": true,
+     "p0": [
+      7329,
+      7329,
+      7030
+     ],
+     "p1": [
+      1312,
+      1312,
+      1312
+     ],
+     "pools_proven": [
+      true,
+      true,
+      true
+     ]
+    },
+    {
+     "seed": 1020,
+     "g2": 467,
+     "g2_proven": true,
+     "p0": [
+      3052,
+      3489,
+      754
+     ],
+     "p1": [
+      467,
+      467,
+      467
+     ],
+     "pools_proven": [
+      true,
+      true,
+      true
+     ]
+    },
+    {
+     "seed": 1021,
+     "g2": 2447,
+     "g2_proven": false,
+     "p0": [
+      16855,
+      16855,
+      16851
+     ],
+     "p1": [
+      2447,
+      2447,
+      2447
+     ],
+     "pools_proven": [
+      true,
+      true,
+      true
+     ]
+    },
+    {
+     "seed": 1022,
+     "g2": 282,
+     "g2_proven": true,
+     "p0": [
+      1075,
+      6774,
+      5623
+     ],
+     "p1": [
+      1075,
+      1075,
+      1075
+     ],
+     "pools_proven": [
+      true,
+      true,
+      true
+     ]
+    },
+    {
+     "seed": 1023,
+     "g2": 205,
+     "g2_proven": true,
+     "p0": [
+      205,
+      205,
+      205
+     ],
+     "p1": [
+      205,
+      205,
+      205
+     ],
+     "pools_proven": [
+      true,
+      true,
+      true
+     ]
+    },
+    {
+     "seed": 1024,
+     "g2": 230,
+     "g2_proven": true,
+     "p0": [
+      230,
+      512,
+      554
+     ],
+     "p1": [
+      230,
+      230,
+      230
+     ],
+     "pools_proven": [
+      true,
+      true,
+      true
+     ]
+    },
+    {
+     "seed": 1025,
+     "g2": 192,
+     "g2_proven": true,
+     "p0": [
+      192,
+      192,
+      192
+     ],
+     "p1": [
+      192,
+      192,
+      192
+     ],
+     "pools_proven": [
+      true,
+      true,
+      true
+     ]
+    },
+    {
+     "seed": 1026,
+     "g2": 804,
+     "g2_proven": true,
+     "p0": [
+      5812,
+      5840,
+      5812
+     ],
+     "p1": [
+      804,
+      804,
+      804
+     ],
+     "pools_proven": [
+      true,
+      true,
+      true
+     ]
+    },
+    {
+     "seed": 1027,
+     "g2": 1088,
+     "g2_proven": true,
+     "p0": [
+      1453,
+      4741,
+      4447
+     ],
+     "p1": [
+      1088,
+      1088,
+      1088
+     ],
+     "pools_proven": [
+      true,
+      true,
+      true
+     ]
+    },
+    {
+     "seed": 1028,
+     "g2": 1418,
+     "g2_proven": true,
+     "p0": [
+      24088,
+      31910,
+      33993
+     ],
+     "p1": [
+      13590,
+      13590,
+      13590
+     ],
+     "pools_proven": [
+      true,
+      true,
+      true
+     ]
+    },
+    {
+     "seed": 1029,
+     "g2": 643,
+     "g2_proven": true,
+     "p0": [
+      2842,
+      2842,
+      2842
+     ],
+     "p1": [
+      643,
+      643,
+      643
+     ],
+     "pools_proven": [
+      true,
+      true,
+      true
+     ]
+    }
+   ]
+  },
+  "Schlechte Stapelung": {
+   "records": [
+    {
+     "seed": 1000,
+     "g2": 1019,
+     "g2_proven": true,
+     "p0": [
+      2572,
+      2734,
+      2326
+     ],
+     "p1": [
+      1265,
+      1265,
+      1019
+     ],
+     "pools_proven": [
+      true,
+      true,
+      true
+     ]
+    },
+    {
+     "seed": 1001,
+     "g2": 120,
+     "g2_proven": true,
+     "p0": [
+      120,
+      120,
+      120
+     ],
+     "p1": [
+      120,
+      120,
+      120
+     ],
+     "pools_proven": [
+      true,
+      true,
+      true
+     ]
+    },
+    {
+     "seed": 1002,
+     "g2": 216,
+     "g2_proven": true,
+     "p0": [
+      1506,
+      1506,
+      1506
+     ],
+     "p1": [
+      522,
+      522,
+      522
+     ],
+     "pools_proven": [
+      true,
+      true,
+      true
+     ]
+    },
+    {
+     "seed": 1003,
+     "g2": 382,
+     "g2_proven": true,
+     "p0": [
+      382,
+      382,
+      382
+     ],
+     "p1": [
+      382,
+      382,
+      382
+     ],
+     "pools_proven": [
+      true,
+      true,
+      true
+     ]
+    },
+    {
+     "seed": 1004,
+     "g2": 777,
+     "g2_proven": true,
+     "p0": [
+      777,
+      777,
+      777
+     ],
+     "p1": [
+      777,
+      777,
+      777
+     ],
+     "pools_proven": [
+      true,
+      true,
+      true
+     ]
+    },
+    {
+     "seed": 1005,
+     "g2": 1254,
+     "g2_proven": true,
+     "p0": [
+      4849,
+      4849,
+      4849
+     ],
+     "p1": [
+      2812,
+      2812,
+      2812
+     ],
+     "pools_proven": [
+      true,
+      true,
+      true
+     ]
+    },
+    {
+     "seed": 1006,
+     "g2": 2111,
+     "g2_proven": false,
+     "p0": [
+      9486,
+      10825,
+      12051
+     ],
+     "p1": [
+      3946,
+      3224,
+      3776
+     ],
+     "pools_proven": [
+      true,
+      true,
+      true
+     ]
+    },
+    {
+     "seed": 1007,
+     "g2": 716,
+     "g2_proven": true,
+     "p0": [
+      1460,
+      3385,
+      3251
+     ],
+     "p1": [
+      744,
+      716,
+      744
+     ],
+     "pools_proven": [
+      true,
+      true,
+      true
+     ]
+    },
+    {
+     "seed": 1008,
+     "g2": 2007,
+     "g2_proven": true,
+     "p0": [
+      9894,
+      9330,
+      9932
+     ],
+     "p1": [
+      2007,
+      2007,
+      2007
+     ],
+     "pools_proven": [
+      true,
+      true,
+      true
+     ]
+    },
+    {
+     "seed": 1009,
+     "g2": 796,
+     "g2_proven": true,
+     "p0": [
+      796,
+      796,
+      796
+     ],
+     "p1": [
+      796,
+      796,
+      796
+     ],
+     "pools_proven": [
+      true,
+      true,
+      true
+     ]
+    },
+    {
+     "seed": 1010,
+     "g2": 373,
+     "g2_proven": true,
+     "p0": [
+      8101,
+      10477,
+      7747
+     ],
+     "p1": [
+      5186,
+      5968,
+      5934
+     ],
+     "pools_proven": [
+      true,
+      true,
+      true
+     ]
+    },
+    {
+     "seed": 1011,
+     "g2": 1146,
+     "g2_proven": true,
+     "p0": [
+      16741,
+      17419,
+      19337
+     ],
+     "p1": [
+      7009,
+      7009,
+      7009
+     ],
+     "pools_proven": [
+      true,
+      true,
+      true
+     ]
+    },
+    {
+     "seed": 1012,
+     "g2": 2666,
+     "g2_proven": true,
+     "p0": [
+      4301,
+      7089,
+      3750
+     ],
+     "p1": [
+      3035,
+      3011,
+      3035
+     ],
+     "pools_proven": [
+      true,
+      true,
+      true
+     ]
+    },
+    {
+     "seed": 1013,
+     "g2": 1040,
+     "g2_proven": true,
+     "p0": [
+      4950,
+      2863,
+      2863
+     ],
+     "p1": [
+      1282,
+      1238,
+      1282
+     ],
+     "pools_proven": [
+      true,
+      true,
+      true
+     ]
+    },
+    {
+     "seed": 1014,
+     "g2": 1987,
+     "g2_proven": true,
+     "p0": [
+      8228,
+      7670,
+      8840
+     ],
+     "p1": [
+      2125,
+      2125,
+      1987
+     ],
+     "pools_proven": [
+      true,
+      true,
+      true
+     ]
+    },
+    {
+     "seed": 1015,
+     "g2": 0,
+     "g2_proven": true,
+     "p0": [
+      36,
+      36,
+      120
+     ],
+     "p1": [
+      0,
+      0,
+      0
+     ],
+     "pools_proven": [
+      true,
+      true,
+      true
+     ]
+    },
+    {
+     "seed": 1016,
+     "g2": 1908,
+     "g2_proven": false,
+     "p0": [
+      12057,
+      10445,
+      10349
+     ],
+     "p1": [
+      3859,
+      3813,
+      3813
+     ],
+     "pools_proven": [
+      true,
+      true,
+      true
+     ]
+    },
+    {
+     "seed": 1017,
+     "g2": 0,
+     "g2_proven": true,
+     "p0": [
+      0,
+      0,
+      0
+     ],
+     "p1": [
+      0,
+      0,
+      0
+     ],
+     "pools_proven": [
+      true,
+      true,
+      true
+     ]
+    },
+    {
+     "seed": 1018,
+     "g2": 969,
+     "g2_proven": true,
+     "p0": [
+      5095,
+      6818,
+      7072
+     ],
+     "p1": [
+      3694,
+      3694,
+      3718
+     ],
+     "pools_proven": [
+      true,
+      true,
+      true
+     ]
+    },
+    {
+     "seed": 1019,
+     "g2": 1688,
+     "g2_proven": true,
+     "p0": [
+      7705,
+      7202,
+      7705
+     ],
+     "p1": [
+      1688,
+      1688,
+      1688
+     ],
+     "pools_proven": [
+      true,
+      true,
+      true
+     ]
+    },
+    {
+     "seed": 1020,
+     "g2": 2135,
+     "g2_proven": true,
+     "p0": [
+      13404,
+      15525,
+      19348
+     ],
+     "p1": [
+      7991,
+      7061,
+      6680
+     ],
+     "pools_proven": [
+      true,
+      true,
+      true
+     ]
+    },
+    {
+     "seed": 1021,
+     "g2": 2447,
+     "g2_proven": false,
+     "p0": [
+      16855,
+      16855,
+      16851
+     ],
+     "p1": [
+      2447,
+      2447,
+      2447
+     ],
+     "pools_proven": [
+      true,
+      true,
+      true
+     ]
+    },
+    {
+     "seed": 1022,
+     "g2": 480,
+     "g2_proven": true,
+     "p0": [
+      1545,
+      6972,
+      6461
+     ],
+     "p1": [
+      1545,
+      1273,
+      1545
+     ],
+     "pools_proven": [
+      true,
+      true,
+      true
+     ]
+    },
+    {
+     "seed": 1023,
+     "g2": 205,
+     "g2_proven": true,
+     "p0": [
+      205,
+      205,
+      205
+     ],
+     "p1": [
+      205,
+      205,
+      205
+     ],
+     "pools_proven": [
+      true,
+      true,
+      true
+     ]
+    },
+    {
+     "seed": 1024,
+     "g2": 230,
+     "g2_proven": true,
+     "p0": [
+      230,
+      512,
+      554
+     ],
+     "p1": [
+      230,
+      230,
+      230
+     ],
+     "pools_proven": [
+      true,
+      true,
+      true
+     ]
+    },
+    {
+     "seed": 1025,
+     "g2": 2564,
+     "g2_proven": false,
+     "p0": [
+      10147,
+      10147,
+      10147
+     ],
+     "p1": [
+      3853,
+      3853,
+      3853
+     ],
+     "pools_proven": [
+      true,
+      true,
+      true
+     ]
+    },
+    {
+     "seed": 1026,
+     "g2": 6210,
+     "g2_proven": false,
+     "p0": [
+      17943,
+      15549,
+      17227
+     ],
+     "p1": [
+      8068,
+      8068,
+      8116
+     ],
+     "pools_proven": [
+      true,
+      true,
+      true
+     ]
+    },
+    {
+     "seed": 1027,
+     "g2": 1088,
+     "g2_proven": true,
+     "p0": [
+      1453,
+      4741,
+      4447
+     ],
+     "p1": [
+      1088,
+      1088,
+      1088
+     ],
+     "pools_proven": [
+      true,
+      true,
+      true
+     ]
+    },
+    {
+     "seed": 1028,
+     "g2": 1832,
+     "g2_proven": true,
+     "p0": [
+      18227,
+      31885,
+      31885
+     ],
+     "p1": [
+      29758,
+      22561,
+      22561
+     ],
+     "pools_proven": [
+      true,
+      true,
+      true
+     ]
+    },
+    {
+     "seed": 1029,
+     "g2": 643,
+     "g2_proven": true,
+     "p0": [
+      2842,
+      2842,
+      2842
+     ],
+     "p1": [
+      643,
+      643,
+      643
+     ],
+     "pools_proven": [
+      true,
+      true,
+      true
+     ]
+    }
+   ]
+  }
+ }
+}
