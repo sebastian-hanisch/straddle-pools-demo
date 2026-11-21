@@ -1,5 +1,5 @@
 """Orakel des CP-SAT-Modells: das bewiesene Optimum gegen Aufzählung ALLER Pläne (alle Zuordnungen und Reihenfolgen) auf Mini-Instanzen,
-bewertet mit der unabhängigen Ereignissimulation aus test_oracle_timing (nicht mit dem Auswerter der Demo). Verglichen wird der Zielwert, nie die Route (Gleichstände)."""
+bewertet mit der unabhängigen ereignisdiskreten Simulation aus test_oracle_timing (nicht mit dem Auswerter der Demo). Verglichen wird der Zielwert, nie die Route (Gleichstände)."""
 
 import itertools
 import math

@@ -79,7 +79,7 @@ Der größte Aufschlag von Parallel + Runde in Schlechte Stapelung liegt in dies
 ## Verifikation
 
 - **Orakel Zeitrechnung:** `stp_timing.evaluate_plan` (kleinste Lösung eines Zeitbedingungssystems) gegen eine unabhängige ereignisgesteuerte Simulation (`tests/test_oracle_timing.py`); beim Anlegen im Scratch-Lauf (nicht im Repo) 2000 Zufallspläne, zulässige und verklemmte, ohne Abweichung; drei absichtlich verstümmelte Auswerter wichen darin in 608 bis 1456 Fällen ab.
-- **Orakel Optimum:** Das bewiesene Optimum des CP-SAT-Modells gegen Aufzählung aller Pläne auf Mini-Instanzen, bewertet mit der Ereignissimulation (`tests/test_oracle_model.py`).
+- **Orakel Optimum:** Das bewiesene Optimum des CP-SAT-Modells gegen Aufzählung aller Pläne auf Mini-Instanzen, bewertet mit der ereignisdiskreten Simulation (`tests/test_oracle_model.py`).
 - **Eigenschaften (für bewiesene Optima; bei Zeitlimit nicht garantiert):** G1 ≤ G3 ≤ G2 ≤ P0, P1 und Listenverfahren; PN gleich G2, wenn bewiesen; ohne Abhängigkeiten zwischen Pools P0 gleich G2 (`tests/test_oracle_model.py`, `tests/test_parallel.py`, `tests/test_series.py`).
 - **Kern:** Zufallsgenerator gegen veröffentlichte Referenzwerte, Instanzgenerator, Pool-Zuschnitte gegen Aufzählung aller Zerlegungen, Neu-Sequenzierung auf 120 Zufallsfällen.
 - **Zahlen:** die Zahlen der Tabelle „Befunde“ gegen die gespeicherte Messreihe in `tests/test_claims.py`; die gespeicherte Reihe in `tests/test_series.py`; die Wiederholbarkeit in `tests/test_wiederholbarkeit.py`; die Schnellstart-Szenarien live in `tests/test_preset_stories.py`.
