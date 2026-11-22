@@ -76,7 +76,7 @@ def test_fremdauftraege_kosten_strafe_je_stueck():
 
 
 def test_zwei_auftraege_ein_sc_nacheinander():
-    """Zweiter Auftrag derselben Warteschlange: SC steht ab 71 am Kran, Fahrt 18 -> 89, Aufnahme 89..104, Fahrt 18 -> 122; Übergabe frühestens 51 + 20 = 71."""
+    """Zweiter Auftrag desselben Krans: SC steht ab 71 am Kran, Fahrt 18 -> 89, Aufnahme 89..104, Fahrt 18 -> 122; Übergabe frühestens 51 + 20 = 71."""
     inst = mini([(0, 0, "L", ()), (0, 1, "L", ())], [[0, 1]])
     tk, ty = M.richtzeiten(inst)
     t = M.evaluate_plan(inst, [[0, 1]], [CRANE0], tk)

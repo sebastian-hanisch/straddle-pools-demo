@@ -3,7 +3,7 @@
 **[→ Demo live ausprobieren](https://sebastianhanisch-straddle-pools-demo.streamlit.app/)**
 
 Fall-Demo für die Website „Sebastian Hanisch – Operations Research und Machine Learning“ (`demos.html`). Straddle Carrier (SC) fahren Container zwischen Kran und Stapelplatz im Yard eines Containerterminals.
-Jeder Kran hat eine feste Warteschlange von Aufträgen mit Richtzeiten; die SC sind in **Pools** festen Kränen zugeordnet. Die Demo plant dieselbe erzeugte Instanz mit sieben Verfahren und beantwortet drei Fragen:
+Jeder Kran hat eine feste Reihenfolge von Aufträgen mit Richtzeiten; die SC sind in **Pools** festen Kränen zugeordnet. Die Demo plant dieselbe erzeugte Instanz mit sieben Verfahren und beantwortet drei Fragen:
 Was kostet der Pool-Zuschnitt, wann hilft es, dass ein SC einem fremden Pool aushilft („Leihen“), und was kostet es, die Pools **getrennt und gleichzeitig** zu rechnen, wenn Aufträge verschiedener Pools voneinander abhängen.
 
 ## Warum dieses Problem
@@ -16,10 +16,10 @@ kennt diese Kopplung nicht und muss sie hinterher behandeln. Die Frage der Demo:
 Kurz (vollständig im Expander „📐 Mathematische Formulierung“ der App, Annahmen im Expander „🚧 Wo die Annahmen enden“):
 
 - **Terminal (Annahmen, an keinem Terminal gemessen):** Kai oben, Yard-Blöcke darunter, Manhattan-Wege mit 6 m/s auf ganze Sekunden gerundet, Aufnehmen oder Absetzen 15 s, Übergabe am Kran 20 s.
-- **Aufträge:** Laden (vom Stellplatz zum Kran) oder Löschen (vom Kran zum Stellplatz), je Kran in fester Reihenfolge. Die Richtzeit am Kran ist 120 s + 75 s je Position der Warteschlange (der erste Auftrag hat Position 0); die am Yard ist beim Laden die Kranzeit minus Fahrt minus Aufnahme, beim Löschen die Kranzeit plus Übergabe plus Fahrt.
-- **Abhängigkeiten:** Paare von Aufträgen gleicher Art an verschiedenen Kränen im selben Stapel; die Stellplatz-Operation des einen beginnt erst, wenn die des anderen beendet ist. Der Anteil der Aufträge in Paaren (ein Paar hat zwei Aufträge; bei 24 Aufträgen und 30 % sind das 7,2 Aufträge, gebildet werden auf ganze Paare gerundet 4 Paare, also 8 Aufträge) und der Anteil der Paare, bei denen der Auftrag, der am Stellplatz zuerst erledigt sein muss, in seiner Warteschlange später dran ist („gegen die Bedarfsreihenfolge gestapelt“), sind Regler.
+- **Aufträge:** Laden (vom Stellplatz zum Kran) oder Löschen (vom Kran zum Stellplatz), je Kran in fester Reihenfolge. Die Richtzeit am Kran ist 120 s + 75 s je Position in der Kranreihenfolge (der erste Auftrag hat Position 0); die am Yard ist beim Laden die Kranzeit minus Fahrt minus Aufnahme, beim Löschen die Kranzeit plus Übergabe plus Fahrt.
+- **Abhängigkeiten:** Paare von Aufträgen gleicher Art an verschiedenen Kränen im selben Stapel; die Stellplatz-Operation des einen beginnt erst, wenn die des anderen beendet ist. Der Anteil der Aufträge in Paaren (ein Paar hat zwei Aufträge; bei 24 Aufträgen und 30 % sind das 7,2 Aufträge, gebildet werden auf ganze Paare gerundet 4 Paare, also 8 Aufträge) und der Anteil der Paare, bei denen der Auftrag, der am Stellplatz zuerst erledigt sein muss, in der Reihenfolge seines Krans später dran ist („gegen die Bedarfsreihenfolge gestapelt“), sind Regler.
 - **Zielwert:** 5 · Kranverspätung + 1 · Yard-Verspätung (Summe über Aufträge, Sekunden) + 30 je poolfremdem Auftrag; Gewichte und Strafe sind Annahmen der Demo und Regler; die Messreihe rechnet mit den Voreinstellungen 5 : 1 : 30. Kleiner ist besser.
-- **Nebenbedingungen:** Kranreihenfolge (Übergaben an einem Kran in Warteschlangenreihenfolge, mindestens 20 s Abstand). Ein Blocker darf vorgezogen werden; der SC wartet dann am Yard. Ein Ladeauftrag darf früher als seine Richtzeit am Kran sein (der SC wartet dort); das kostet nichts, Verspätung zählt nur nach der Richtzeit. Beim Löschen übernimmt der SC den Container frühestens zur Richtzeit.
+- **Nebenbedingungen:** Kranreihenfolge (Übergaben an einem Kran in der Reihenfolge der Positionen, mindestens 20 s Abstand). Ein Blocker darf vorgezogen werden; der SC wartet dann am Yard. Ein Ladeauftrag darf früher als seine Richtzeit am Kran sein (der SC wartet dort); das kostet nichts, Verspätung zählt nur nach der Richtzeit. Beim Löschen übernimmt der SC den Container frühestens zur Richtzeit.
 - **Nicht im Modell:** Störungen, Fahrzeitstreuung, Umstapeln, Einbahnregeln und Staus im Yard, Rückkopplung vom Kran auf den SC (die Richtzeiten sind Daten).
 
 ## Methodik

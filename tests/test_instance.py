@@ -6,7 +6,7 @@ import stp_instance as I
 import stp_terminal as T
 
 
-def test_groesse_und_reihenfolge_der_warteschlangen():
+def test_groesse_und_reihenfolge_je_kran():
     inst = I.make_instance(3, n_cranes=3, n_per_crane=5)
     assert inst.n_jobs == 15 and len(inst.crane_jobs) == 3
     for c, ids in enumerate(inst.crane_jobs):
@@ -70,7 +70,7 @@ def test_is_acyclic_erkennt_einen_kreis():
 
 
 def test_gegen_die_bedarfsreihenfolge_gestapelt_nur_bei_mis_anteil():
-    """Ohne Fehlstapel zeigt jede Abhängigkeit vom früher benötigten zum später benötigten Auftrag (kleinere oder gleiche Position in der Warteschlange)."""
+    """Ohne Fehlstapel zeigt jede Abhängigkeit vom früher benötigten zum später benötigten Auftrag (kleinere oder gleiche Position in der Kranreihenfolge)."""
     for s in range(30):
         inst = I.make_instance(s, dep_pct=40, mis_pct=0)
         for job in inst.jobs:

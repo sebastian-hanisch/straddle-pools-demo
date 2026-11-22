@@ -9,7 +9,7 @@ als kleinste Lösung aller Zeitbedingungen, auf Ereignisebene je Auftrag:
     e  Zeitpunkt, zu dem der SC wieder frei ist
 
 Bedingungen: Fahrzeiten zwischen den Operationen, Abhängigkeiten (y des Abhängigen >= y des Blockers + SERVICE), Kranreihenfolge (a des nächsten Auftrags
-der Warteschlange >= a des vorigen + HAND), beim Löschen frühestens zur Richtzeit am Kran. Gibt es keine Lösung (Zeitkreis, Verklemmung), ist das Ergebnis None."""
+der Kranreihenfolge >= a des vorigen + HAND), beim Löschen frühestens zur Richtzeit am Kran. Gibt es keine Lösung (Zeitkreis, Verklemmung), ist das Ergebnis None."""
 
 from typing import NamedTuple
 

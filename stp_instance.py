@@ -1,8 +1,8 @@
-"""Instanzen: Warteschlangen je Kran, Stellplätze und Stapel-Abhängigkeiten, deterministisch aus dem Zufalls-Seed (SplitMix64).
+"""Instanzen: Auftragsreihenfolgen je Kran, Stellplätze und Stapel-Abhängigkeiten, deterministisch aus dem Zufalls-Seed (SplitMix64).
 
 Auftrag: Art L (Laden: vom Stellplatz zum Kran) oder D (Löschen: vom Kran zum Stellplatz), ein Block, die Stellplatz-Position.
 Abhängigkeit a -> b: die Stellplatz-Operation von b beginnt erst, wenn die von a beendet ist (Container b liegt unter a im selben Stapel).
-Abhängigkeiten gibt es nur zwischen Aufträgen gleicher Art an verschiedenen Kränen und nie so, dass zusammen mit den Kranwarteschlangen ein Kreis entsteht."""
+Abhängigkeiten gibt es nur zwischen Aufträgen gleicher Art an verschiedenen Kränen und nie so, dass zusammen mit den Kranreihenfolgen ein Kreis entsteht."""
 
 from dataclasses import dataclass
 
@@ -14,7 +14,7 @@ from stp_rng import SplitMix64
 class Job:
     id: int
     c: int                 # Kran
-    k: int                 # Position in der Warteschlange des Krans (0 = zuerst)
+    k: int                 # Position in der Kranreihenfolge (0 = zuerst) (0 = zuerst)
     kind: str              # "L" oder "D"
     block: int
     slot: tuple            # Stellplatz-Position (x, y)
@@ -27,7 +27,7 @@ class Instance:
     n_cranes: int
     n_blocks: int
     jobs: tuple
-    crane_jobs: tuple      # je Kran: Auftrags-IDs in Warteschlangenreihenfolge
+    crane_jobs: tuple      # je Kran: Auftrags-IDs in der Reihenfolge der Positionen
     crane_pos: tuple
 
     @property
@@ -108,7 +108,7 @@ def make_instance(seed: int, n_cranes: int = 4, n_per_crane: int = 6, n_blocks: 
 
 
 def is_acyclic(inst: Instance) -> bool:
-    """Prüft, dass Kranwarteschlangen und Abhängigkeiten zusammen keinen Kreis bilden (Kahn-Verfahren)."""
+    """Prüft, dass Kranreihenfolgen und Abhängigkeiten zusammen keinen Kreis bilden (Kahn-Verfahren)."""
     indeg = {j.id: len(j.preds) + (1 if j.k > 0 else 0) for j in inst.jobs}
     ready = [j for j, d in indeg.items() if d == 0]
     seen = 0

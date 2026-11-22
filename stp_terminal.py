@@ -9,7 +9,7 @@ HAND = 20               # Übergabe am Kran (s); zugleich Mindestabstand zweier 
 CRANE_SPACING = 40      # Abstand zweier Kräne am Kai (m)
 YARD_OFFSET = 110       # Abstand der ersten Blockreihe vom Kai (m); jeder zweite Block liegt weitere YARD_STAGGER m dahinter
 YARD_STAGGER = 20
-CYCLE = 75              # Takt je Kran: Richtzeit des k-ten Auftrags einer Warteschlange = LEAD + k * CYCLE (s)
+CYCLE = 75              # Takt je Kran: Richtzeit des k-ten Auftrags eines Krans = LEAD + k * CYCLE (s)
 LEAD = 120              # Vorlauf der ersten Richtzeit (s)
 
 

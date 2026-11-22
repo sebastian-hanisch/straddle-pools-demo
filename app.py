@@ -42,7 +42,7 @@ with st.container(key="kopf"):
     st.title("🧩 Straddle Carrier: Pools, Abhängigkeiten und getrennte Rechnung")
 st.markdown(
     """
-Jeder Kran hat eine feste **Warteschlange** von Aufträgen mit **Richtzeiten** (am Kran wichtiger als am Yard). Straddle Carrier (**SC**) sind in **Pools** fest einem oder mehreren Kränen zugeordnet.
+Jeder Kran hat eine feste **Reihenfolge** von Aufträgen mit **Richtzeiten** (am Kran wichtiger als am Yard). Straddle Carrier (**SC**) sind in **Pools** fest einem oder mehreren Kränen zugeordnet.
 Container, die im Yard übereinander stehen, aber zu verschiedenen Kränen gehören, machen Aufträge **voneinander abhängig**, auch über Pools hinweg.
 Die Demo vergleicht sieben Verfahren auf derselben Instanz: **Gesamtplanung** ohne Pooling, mit festen Pools und mit Leihen, **strikt parallele Pool-Rechnung** mit Nachbehandlung der Abhängigkeiten, ein einfaches gieriges Verfahren.
 Gezeigt wird, was der **Pool-Zuschnitt** kostet und was es kostet, die Pools **getrennt zu rechnen**. Alle Instanzen sind erzeugt und alle Annahmen stehen im Abschnitt **🚧 Wo die Annahmen enden**.
@@ -67,16 +67,16 @@ init_session_state_defaults()
 with st.sidebar:
     sidebar_presets()  # Schnellstart oben, das aktive Preset ist hervorgehoben
     st.header("🏗️ Terminal und Aufträge")
-    n_cranes = st.slider("Kräne", *bounds("n_cranes"), key="n_cranes", help="Zahl der Kräne am Kai; jeder hat eine feste Warteschlange.")
+    n_cranes = st.slider("Kräne", *bounds("n_cranes"), key="n_cranes", help="Zahl der Kräne am Kai; jeder hat eine feste Auftragsreihenfolge.")
     jobs_per_crane = st.slider("Aufträge je Kran", *bounds("jobs_per_crane"), key="jobs_per_crane",
-                               help=f"Länge jeder Warteschlange; höchstens {C.MAX_JOBS} Aufträge insgesamt (größere Fälle nur in der vorgerechneten Reihe).")
+                               help=f"Zahl der Aufträge in der Reihenfolge jedes Krans; höchstens {C.MAX_JOBS} Aufträge insgesamt (größere Fälle nur in der vorgerechneten Reihe).")
     seed = st.number_input("Zufalls-Seed der Instanz", *bounds("seed_input"), key="seed_input", step=1)
     st.button("🎲 Neue Instanz generieren", width="stretch", on_click=randomize_seed)
     st.header("📦 Abhängigkeiten")
     dep_pct = st.slider("Aufträge in Stapelpaaren (%)", *bounds("dep_pct"), step=C.DEP_PCT_STEP, key="dep_pct",
                         help="Anteil der Aufträge, deren Container mit einem Container eines anderen Krans im selben Stapel steht.")
     mis_pct = st.slider("Davon entgegen der Bedarfsreihenfolge (%)", *bounds("mis_pct"), step=C.MIS_PCT_STEP, key="mis_pct",
-                        help="Anteil der Stapelpaare, bei denen der Auftrag, der am Stellplatz zuerst erledigt sein muss, in seiner Warteschlange später dran ist als der andere.")
+                        help="Anteil der Stapelpaare, bei denen der Auftrag, der am Stellplatz zuerst erledigt sein muss, in der Reihenfolge seines Krans später dran ist als der andere.")
     st.header("🎯 Pooling und Zielgröße")
     n_sc = st.slider("SC insgesamt", *bounds("n_sc"), key="n_sc", help="Größe der Flotte; jeder Pool bekommt mindestens einen SC.")
     strategy = st.selectbox("Pool-Zuschnitt", C.STRATEGY_KEYS, key="strategy", format_func=lambda k: PL.STRATEGY_LABELS[k],
@@ -207,7 +207,7 @@ with st.expander("📐 Mathematische Formulierung"):
     # erklaerseite:lesehilfe:start (erzeugt von tools/set_demo_explainer.py (Website-Repo) aus tools/content/explainers/straddle-pools-erklaert.json, nicht von Hand ändern)
     st.markdown(
         r"""
-**Lesehilfe.** Gegeben sind Aufträge $j$ mit Kran $c_j$, Art Laden $L$ oder Löschen $D$ und Stellplatz $s_j$, Straddle Carrier (SC) $k$ mit Startposition $o_k$, Richtzeiten $\mathrm{tk}_j$ (Kran) und $\mathrm{ty}_j$ (Yard), eine Fahrzeit $\tau(u,v)$ zwischen Orten, Übergabezeit $H$ und Operationszeit $S$, Abhängigkeiten $\mathcal D$ zwischen Aufträgen, die Warteschlangen der Kräne, Pools $\pi$ sowie Gewichte und Strafe. Gesucht sind die Zuordnung der Aufträge zu den SC, ihre Reihenfolge je SC und alle Zeiten, sodass der gewichtete Zielwert aus Verspätungen und Strafe möglichst klein ist.
+**Lesehilfe.** Gegeben sind Aufträge $j$ mit Kran $c_j$, Art Laden $L$ oder Löschen $D$ und Stellplatz $s_j$, Straddle Carrier (SC) $k$ mit Startposition $o_k$, Richtzeiten $\mathrm{tk}_j$ (Kran) und $\mathrm{ty}_j$ (Yard), eine Fahrzeit $\tau(u,v)$ zwischen Orten, Übergabezeit $H$ und Operationszeit $S$, Abhängigkeiten $\mathcal D$ zwischen Aufträgen, die Auftragsreihenfolgen der Kräne, Pools $\pi$ sowie Gewichte und Strafe. Gesucht sind die Zuordnung der Aufträge zu den SC, ihre Reihenfolge je SC und alle Zeiten, sodass der gewichtete Zielwert aus Verspätungen und Strafe möglichst klein ist.
 
 | Symbol | Bedeutung |
 |---|---|
@@ -216,13 +216,13 @@ with st.expander("📐 Mathematische Formulierung"):
 | $L$, $D$ | Art des Auftrags: Laden (Stellplatz zum Kran) bzw. Löschen (Kran zum Stellplatz) |
 | $k$, $o_k$ | SC und seine Startposition |
 | $\pi(k)$, $\pi(c)$ | Pool des SC $k$ bzw. des Krans $c$ |
-| $\mathrm{tk}_j$, $r_j$ | Richtzeit von Auftrag $j$ am Kran, $\mathrm{tk}_j = 120 + 75\,r_j$ mit $r_j$ als Position in der Warteschlange (der erste Auftrag hat $r_j = 0$); beim Löschen übernimmt der SC frühestens zu dieser Zeit, beim Laden darf er früher am Kran sein |
+| $\mathrm{tk}_j$, $r_j$ | Richtzeit von Auftrag $j$ am Kran, $\mathrm{tk}_j = 120 + 75\,r_j$ mit $r_j$ als Position in der Kranreihenfolge (der erste Auftrag hat $r_j = 0$); beim Löschen übernimmt der SC frühestens zu dieser Zeit, beim Laden darf er früher am Kran sein |
 | $\mathrm{ty}_j$ | Richtzeit am Yard: $\mathrm{tk}_j - d_j - S$ beim Laden, $\mathrm{tk}_j + H + d_j$ beim Löschen |
 | $\tau(u,v)$, $d_j$ | Fahrzeit zwischen den Orten $u$ und $v$ (Manhattan-Weg durch 6 m/s, ganze Sekunden) bzw. Fahrzeit von Auftrag $j$ zwischen Kran und Stellplatz |
 | $\mathrm{erste\ Position}_j$, $\mathrm{letzte\ Position}_j$ | erster und letzter Ort von Auftrag $j$ (Laden: Stellplatz, dann Kran; Löschen: Kran, dann Stellplatz) |
 | $H$, $S$ | Übergabezeit am Kran (20 s) bzw. Operationszeit am Stellplatz (15 s) |
 | $\mathcal D$ | Menge der Abhängigkeiten $(i,j)$: die Stellplatz-Operation von $j$ beginnt erst nach der von $i$ |
-| $(p,q)$ | zwei aufeinanderfolgende Aufträge der Warteschlange eines Krans |
+| $(p,q)$ | zwei aufeinanderfolgende Aufträge der Kranreihenfolge |
 | $w_K$, $w_Y$, $\lambda$ | Gewichte der Verspätung am Kran bzw. am Yard (die Marken $K$ und $Y$ stehen für Kran und Yard) und Strafe je poolfremdem Auftrag |
 | $x_{jk}$ | $1$, wenn SC $k$ den Auftrag $j$ fährt, sonst $0$ |
 | $z^k_{ij}$ | $1$, wenn bei SC $k$ der Auftrag $j$ auf $i$ folgt ($i = 0$: erster Auftrag des SC; $j = 0$: Rückkehr nach dem letzten Auftrag), sonst $0$ |
@@ -236,8 +236,8 @@ with st.expander("📐 Mathematische Formulierung"):
     st.markdown(
         "**Gegeben:** Aufträge $J$ (Kran $c_j$, Art Laden $L$ oder Löschen $D$, Stellplatz $s_j$), SC $V$ mit Startposition $o_k$, Richtzeiten $\\mathrm{tk}_j$ (Kran) und $\\mathrm{ty}_j$ (Yard), "
         "Fahrzeit $\\tau(u,v)$ (Manhattan-Weg durch 6 m/s, ganze Sekunden), $d_j = \\tau(\\text{Kran}_{c_j}, s_j)$, Übergabezeit $H = 20$, Operationszeit $S = 15$, "
-        "Richtzeiten $\\mathrm{tk}_j = 120 + 75\\,r_j$ ($r_j$ = Position in der Warteschlange, der erste Auftrag hat $r_j = 0$) und $\\mathrm{ty}_j = \\mathrm{tk}_j - d_j - S$ (Laden) bzw. $\\mathrm{ty}_j = \\mathrm{tk}_j + H + d_j$ (Löschen), "
-        "Abhängigkeiten $(i,j) \\in \\mathcal D$ (Stellplatz-Operation von $j$ erst nach der von $i$), Kranwarteschlangen $(p,q)$ (aufeinanderfolgende Aufträge eines Krans), "
+        "Richtzeiten $\\mathrm{tk}_j = 120 + 75\\,r_j$ ($r_j$ = Position in der Kranreihenfolge, der erste Auftrag hat $r_j = 0$) und $\\mathrm{ty}_j = \\mathrm{tk}_j - d_j - S$ (Laden) bzw. $\\mathrm{ty}_j = \\mathrm{tk}_j + H + d_j$ (Löschen), "
+        "Abhängigkeiten $(i,j) \\in \\mathcal D$ (Stellplatz-Operation von $j$ erst nach der von $i$), Kranreihenfolgen $(p,q)$ (aufeinanderfolgende Aufträge eines Krans), "
         "Pool $\\pi(k)$ des SC und $\\pi(c)$ des Krans, Gewichte $w_K, w_Y$, Strafe $\\lambda$.\n\n"
         "**Gesucht:** Zuordnung $x_{jk}$ und Reihenfolge der Aufträge je SC (Bogen $z^k_{ij}$ = Auftrag $j$ folgt auf $i$ bei SC $k$; $0$ = Start am Standort des SC), Zeiten $f_j, a_j, y_j, e_j$."
     )
@@ -245,7 +245,7 @@ with st.expander("📐 Mathematische Formulierung"):
     st.latex(r"\sum_k x_{jk} = 1,\qquad \sum_i z^k_{ij} = x_{jk} = \sum_l z^k_{jl},\qquad \sum_j z^k_{0j} = \sum_j z^k_{j0} \le 1")
     st.latex(r"z^k_{0j} = 1 \Rightarrow f_j \ge \tau(o_k, \mathrm{erste\ Position}_j),\qquad z^k_{ij} = 1 \Rightarrow f_j \ge e_i + \tau(\mathrm{letzte\ Position}_i, \mathrm{erste\ Position}_j)")
     st.latex(r"L:\ f_j = y_j,\ a_j \ge y_j + S + d_j,\ e_j = a_j + H \qquad D:\ f_j = a_j \ge \mathrm{tk}_j,\ y_j \ge a_j + H + d_j,\ e_j = y_j + S")
-    st.latex(r"y_j \ge y_i + S\ \ ((i,j)\in\mathcal D),\qquad a_q \ge a_p + H\ \ ((p,q)\ \text{Kranwarteschlange}),\qquad T^K_j \ge a_j - \mathrm{tk}_j,\ T^Y_j \ge y_j - \mathrm{ty}_j,\ T \ge 0")
+    st.latex(r"y_j \ge y_i + S\ \ ((i,j)\in\mathcal D),\qquad a_q \ge a_p + H\ \ ((p,q)\ \text{Kranreihenfolge}),\qquad T^K_j \ge a_j - \mathrm{tk}_j,\ T^Y_j \ge y_j - \mathrm{ty}_j,\ T \ge 0")
     st.latex(r"x_{jk},\ z^k_{ij} \in \{0,1\},\qquad f_j, a_j, y_j, e_j, T^K_j, T^Y_j \ge 0")
     st.markdown(
         "Der Index $0$ steht für den Standort des SC, am Anfang und am Ende der Rundreise. Die Bedingungen zu den Zeiten schließen Teiltouren aus, weil jeder Auftrag mindestens $H + S + d_j > 0$ dauert. **Parallel:** je Pool dasselbe Modell nur über die Aufträge und SC des Pools "
@@ -256,8 +256,8 @@ with st.expander("🚧 Wo die Annahmen enden"):
     st.markdown(
         "- **Erzeugte Instanzen:** Aufträge, Stellplätze und Stapelpaare stammen aus einem Zufallsgenerator (Zufalls-Seed), nicht aus einem Terminal. Alle Zahlen gelten für diese Instanzen.\n"
         "- **Terminal:** Kai oben, Yard-Blöcke darunter, Manhattan-Wege mit 6 m/s, Operation 15 s, Übergabe 20 s; keine Einbahnregeln, keine Staus.\n"
-        "- **Richtzeiten:** am Kran 120 s + 75 s je Position der Warteschlange; am Yard aus der nominalen Fahrt abgeleitet. Die Richtzeiten sind Daten: ein Kran wartet nicht auf einen SC und verschiebt keine späteren Richtzeiten.\n"
-        "- **Kranreihenfolge:** Übergaben an einem Kran in Warteschlangenreihenfolge mit mindestens 20 s Abstand.\n"
+        "- **Richtzeiten:** am Kran 120 s + 75 s je Position in der Kranreihenfolge; am Yard aus der nominalen Fahrt abgeleitet. Die Richtzeiten sind Daten: ein Kran wartet nicht auf einen SC und verschiebt keine späteren Richtzeiten.\n"
+        "- **Kranreihenfolge:** Übergaben an einem Kran in der Reihenfolge der Positionen mit mindestens 20 s Abstand.\n"
         "- **Laden vor der Richtzeit:** Ein Ladeauftrag darf früher als seine Richtzeit am Kran sein (der SC wartet dann am Kran); das kostet nichts, Verspätung zählt nur nach der Richtzeit. Beim Löschen übernimmt der SC den Container frühestens zur Richtzeit.\n"
         "- **Abhängigkeiten:** nur zwischen Aufträgen gleicher Art an verschiedenen Kränen; ein Blocker darf vorgezogen werden (der SC wartet dann am Yard). Umstapeln gibt es nicht.\n"
         "- **Gewichte:** Verspätung am Kran, am Yard und Strafe je poolfremdem Auftrag sind Annahmen der Demo; die Rangfolge der Verfahren kann daran hängen.\n"

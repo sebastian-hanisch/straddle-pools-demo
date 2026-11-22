@@ -26,7 +26,7 @@ def simulate(inst, routes, start_pos, tk):
     n_sc = len(routes)
     ptr = [0] * n_sc
     pos = list(start_pos)
-    started = [0] * inst.n_cranes            # wie viele Aufträge der Warteschlange ihre Übergabe schon begonnen haben
+    started = [0] * inst.n_cranes            # wie viele Aufträge der Kranreihenfolge ihre Übergabe schon begonnen haben
     crane_free = [0] * inst.n_cranes         # frühester Beginn der nächsten Übergabe an diesem Kran
     yard_done = {}                           # Auftrag -> Ende der Stellplatz-Operation
     wait_yard, wait_crane = {}, {}           # Auftrag -> wartender SC
@@ -186,7 +186,7 @@ def test_randfaelle_ein_sc_viele_sc_keine_abhaengigkeit():
 
 
 def test_gleichstand_zweier_sc_am_kran_gibt_dieselbe_reihenfolge():
-    """Zwei SC erreichen den Kran gleichzeitig: die Kranreihenfolge (Position in der Warteschlange) entscheidet, nicht die Reihenfolge der Ereignisse."""
+    """Zwei SC erreichen den Kran gleichzeitig: die Kranreihenfolge (Position in der Kranreihenfolge) entscheidet, nicht die Reihenfolge der Ereignisse."""
     inst = I.make_instance(4, n_cranes=1, n_per_crane=2, dep_pct=0)
     tk, _ = M.richtzeiten(inst)
     for routes in ([[0], [1]], [[1], [0]]):
