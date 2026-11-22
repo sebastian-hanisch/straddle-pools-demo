@@ -263,7 +263,7 @@ with st.expander("🚧 Wo die Annahmen enden"):
         "- **Gewichte:** Verspätung am Kran, am Yard und Strafe je poolfremdem Auftrag sind Annahmen der Demo; die Rangfolge der Verfahren kann daran hängen.\n"
         "- **Keine Störungen:** keine Fahrzeitstreuung, keine Ausfälle.\n"
         "- **Rechnen:** Die Gesamtmodelle laufen mit 2 CP-SAT-Prozessen und dem eingestellten Zeitlimit; Ergebnisse ohne Beweis können sich zwischen Läufen und Rechnern unterscheiden.\n"
-        "- **Gleich gute Pläne:** Auch bewiesene Pool-Modelle haben oft mehrere gleich gute Lösungen. Die parallelen Verfahren hängen davon ab, welche davon der Löser liefert; ein anderer Zufallswert des Lösers kann ihren Zielwert ändern (siehe README, „Wiederholbarkeit“)."
+        "- **Gleich gute Pläne:** Auch bewiesene Pool-Modelle haben oft mehrere gleich gute Lösungen. Die parallelen Verfahren hängen davon ab, welche davon der Löser liefert; ein anderer Zufalls-Seed des Lösers kann ihren Zielwert ändern (siehe README, „Wiederholbarkeit“)."
     )
 
 st.markdown("---")

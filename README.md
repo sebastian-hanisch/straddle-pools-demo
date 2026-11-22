@@ -62,7 +62,7 @@ Alle Zahlen stammen aus der vorgerechneten Messreihe (`data/messreihe.json`, Wer
 
 ### Wiederholbarkeit
 
-Die parallelen Verfahren hängen davon ab, welchen von mehreren gleich guten Plänen jedes Pool-Modell liefert. Auch wenn jedes Pool-Modell bewiesen optimal ist (in 30 von 30 Instanzen beider Szenarien), kann ein anderer Zufallswert des Lösers (1, 2 und 3, ein CP-SAT-Prozess; `tools/wiederholbarkeit.py`, `data/wiederholbarkeit.json`) den Zielwert ändern: In Kleiner Hafen ändert sich P0 in 17 von 30 Instanzen und P1 in 4, in Schlechte Stapelung P0 in 20 und P1 in 13.
+Die parallelen Verfahren hängen davon ab, welchen von mehreren gleich guten Plänen jedes Pool-Modell liefert. Auch wenn jedes Pool-Modell bewiesen optimal ist (in 30 von 30 Instanzen beider Szenarien), kann ein anderer Zufalls-Seed des Lösers (1, 2 und 3, ein CP-SAT-Prozess; `tools/wiederholbarkeit.py`, `data/wiederholbarkeit.json`) den Zielwert ändern: In Kleiner Hafen ändert sich P0 in 17 von 30 Instanzen und P1 in 4, in Schlechte Stapelung P0 in 20 und P1 in 13.
 Parallel + Runde ist dabei in Kleiner Hafen in 24 von 30 Instanzen gleich G2 und in 4 von 30 mehr als doppelt so teuer (in allen drei Läufen), in Schlechte Stapelung in 13 bis 15 gleich und in 8 mehr als doppelt; P0 ist in Kleiner Hafen in 11 bis 12 gleich und in 13 bis 16 mehr als doppelt, in Schlechte Stapelung in 6 bis 7 gleich und in 19 bis 23 mehr als doppelt.
 Der größte Aufschlag von Parallel + Runde in Schlechte Stapelung liegt in diesen Läufen zwischen 20.729 und 27.926 (im gespeicherten Lauf 13.526): eine Größenordnung, keine feste Zahl. Verglichen wird mit dem gespeicherten Wert von G2. Die Aussage über die Verteilung (ein Teil der Instanzen gleich, ein anderer Teil sehr teuer) bleibt in allen Läufen bestehen; die einzelnen Zählungen schwanken um wenige Instanzen.
 
@@ -78,7 +78,7 @@ Der größte Aufschlag von Parallel + Runde in Schlechte Stapelung liegt in dies
 
 ## Verifikation
 
-- **Orakel Zeitrechnung:** `stp_timing.evaluate_plan` (kleinste Lösung eines Zeitbedingungssystems) gegen eine unabhängige ereignisgesteuerte Simulation (`tests/test_oracle_timing.py`); beim Anlegen im Scratch-Lauf (nicht im Repo) 2000 Zufallspläne, zulässige und verklemmte, ohne Abweichung; drei absichtlich verstümmelte Auswerter wichen darin in 608 bis 1456 Fällen ab.
+- **Orakel Zeitrechnung:** `stp_timing.evaluate_plan` (kleinste Lösung eines Zeitbedingungssystems) gegen eine unabhängige ereignisdiskrete Simulation (`tests/test_oracle_timing.py`); beim Anlegen im Scratch-Lauf (nicht im Repo) 2000 Zufallspläne, zulässige und verklemmte, ohne Abweichung; drei absichtlich verstümmelte Auswerter wichen darin in 608 bis 1456 Fällen ab.
 - **Orakel Optimum:** Das bewiesene Optimum des CP-SAT-Modells gegen Aufzählung aller Pläne auf Mini-Instanzen, bewertet mit der ereignisdiskreten Simulation (`tests/test_oracle_model.py`).
 - **Eigenschaften (für bewiesene Optima; bei Zeitlimit nicht garantiert):** G1 ≤ G3 ≤ G2 ≤ P0, P1 und Listenverfahren; PN gleich G2, wenn bewiesen; ohne Abhängigkeiten zwischen Pools P0 gleich G2 (`tests/test_oracle_model.py`, `tests/test_parallel.py`, `tests/test_series.py`).
 - **Kern:** Zufallsgenerator gegen veröffentlichte Referenzwerte, Instanzgenerator, Pool-Zuschnitte gegen Aufzählung aller Zerlegungen, Neu-Sequenzierung auf 120 Zufallsfällen.
@@ -103,7 +103,7 @@ Der größte Aufschlag von Parallel + Runde in Schlechte Stapelung liegt in dies
 | `stp_visualization.py` | Plotly-Abbildungen (Achsen gesperrt) |
 | `stp_pdf_export.py` | PDF-Export |
 | `stp_presets.py`, `stp_layout.py` | Permalink, Schnellstart, fester Kopf |
-| `data/messreihe.json`, `data/wiederholbarkeit.json` | vorgerechnete Messreihe; P0 und P1 mit drei Zufallswerten des Lösers |
+| `data/messreihe.json`, `data/wiederholbarkeit.json` | vorgerechnete Messreihe; P0 und P1 mit drei Zufalls-Seeds des Lösers |
 | `tools/messreihe.py`, `tools/wiederholbarkeit.py`, `tools/tune_presets.py`, `tools/series_report.py` | Messreihe, Wiederholbarkeit, Auswahl der Zufalls-Seeds der Schnellstart-Szenarien, Kennzahlen; `tools/PRESET_SWEEP.md` |
 | `tests/` | Tests (siehe Verifikation) |
 | `.github/workflows/tests.yml`, `requirements*.txt`, `.streamlit/config.toml` | CI, Laufzeit-Bibliotheken, Einstellungen |
