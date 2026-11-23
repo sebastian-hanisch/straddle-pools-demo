@@ -33,7 +33,7 @@ def simulate(inst, routes, start_pos, tk):
     out = {}
     finished = [0]
 
-    def next_job(k, t):
+    def next_order(k, t):
         if ptr[k] == len(routes[k]):
             finished[0] += 1
             return
@@ -41,69 +41,69 @@ def simulate(inst, routes, start_pos, tk):
         push(t + T.tt(pos[k], M.pos_first(inst, j)), "arrive_first", k, j)
 
     def try_yard(k, j, t):
-        if all(p in yard_done for p in inst.jobs[j].preds):
+        if all(p in yard_done for p in inst.orders[j].preds):
             out.setdefault(j, {})["y"] = t
-            if inst.jobs[j].kind == "L":
+            if inst.orders[j].kind == "L":
                 out[j]["f"] = t
             push(t + T.SERVICE, "yard_end", k, j)
         else:
             wait_yard[j] = k
 
     def try_crane(k, j, t):
-        job = inst.jobs[j]
-        c = job.c
-        if job.k == started[c] and t >= crane_free[c] and (job.kind == "L" or t >= tk[j]):
+        order = inst.orders[j]
+        c = order.c
+        if order.k == started[c] and t >= crane_free[c] and (order.kind == "L" or t >= tk[j]):
             started[c] += 1
             crane_free[c] = t + T.HAND
             out.setdefault(j, {})["a"] = t
-            if job.kind == "D":
+            if order.kind == "D":
                 out[j]["f"] = t
             push(t + T.HAND, "handoff_end", k, j)
             push(t + T.HAND, "crane_wake", c)
         else:
             wait_crane[j] = k
-            if job.kind == "D" and t < tk[j]:
+            if order.kind == "D" and t < tk[j]:
                 push(tk[j], "crane_wake", c)
 
     for k in range(n_sc):
-        next_job(k, 0)
+        next_order(k, 0)
     while heap:
         t, _, kind, args = heapq.heappop(heap)
         if kind == "arrive_first":
             k, j = args
-            (try_yard if inst.jobs[j].kind == "L" else try_crane)(k, j, t)
+            (try_yard if inst.orders[j].kind == "L" else try_crane)(k, j, t)
         elif kind == "yard_end":
             k, j = args
             yard_done[j] = t
-            job = inst.jobs[j]
-            if job.kind == "L":
-                push(t + T.tt(job.slot, inst.crane_pos[job.c]), "arrive_crane", k, j)
+            order = inst.orders[j]
+            if order.kind == "L":
+                push(t + T.tt(order.slot, inst.crane_pos[order.c]), "arrive_crane", k, j)
             else:
                 out[j]["e"] = t
-                pos[k] = job.slot
+                pos[k] = order.slot
                 ptr[k] += 1
-                next_job(k, t)
-            for w in [w for w in list(wait_yard) if all(p in yard_done for p in inst.jobs[w].preds)]:
+                next_order(k, t)
+            for w in [w for w in list(wait_yard) if all(p in yard_done for p in inst.orders[w].preds)]:
                 try_yard(wait_yard.pop(w), w, t)
         elif kind == "arrive_crane":
             k, j = args
             try_crane(k, j, t)
         elif kind == "crane_wake":
             (c,) = args
-            if started[c] < len(inst.crane_jobs[c]):
-                j = inst.crane_jobs[c][started[c]]
+            if started[c] < len(inst.crane_orders[c]):
+                j = inst.crane_orders[c][started[c]]
                 if j in wait_crane:
                     try_crane(wait_crane.pop(j), j, t)
         elif kind == "handoff_end":
             k, j = args
-            job = inst.jobs[j]
-            if job.kind == "L":
+            order = inst.orders[j]
+            if order.kind == "L":
                 out[j]["e"] = t
-                pos[k] = inst.crane_pos[job.c]
+                pos[k] = inst.crane_pos[order.c]
                 ptr[k] += 1
-                next_job(k, t)
+                next_order(k, t)
             else:
-                push(t + T.tt(inst.crane_pos[job.c], job.slot), "arrive_slot", k, j)
+                push(t + T.tt(inst.crane_pos[order.c], order.slot), "arrive_slot", k, j)
         elif kind == "arrive_slot":
             k, j = args
             try_yard(k, j, t)
@@ -115,8 +115,8 @@ def simulate(inst, routes, start_pos, tk):
 def topologischer_plan(inst, n_sc, rng):
     """Zufälliger zulässiger Plan: Aufträge in zufälliger topologischer Reihenfolge (Kranketten und Abhängigkeiten) auf zufällige SC verteilt."""
     placed, routes = set(), [[] for _ in range(n_sc)]
-    while len(placed) < inst.n_jobs:
-        bereit = [j.id for j in inst.jobs if j.id not in placed and all(p in placed for p in j.preds)
+    while len(placed) < inst.n_orders:
+        bereit = [j.id for j in inst.orders if j.id not in placed and all(p in placed for p in j.preds)
                   and (inst.crane_prev(j.id) is None or inst.crane_prev(j.id) in placed)]
         j = bereit[rng.below(len(bereit))]
         routes[rng.below(n_sc)].append(j)
@@ -163,15 +163,15 @@ def test_ereignissimulation_gleicht_dem_auswerter_auf_zufallsplaenen():
 def test_ereignissimulation_an_der_handinstanz():
     """Dieselbe Handrechnung wie in test_timing: Löschen mit Richtzeit 120 gibt Übergabe 120, Stellplatz 158, frei 173."""
     inst = I.make_instance(0, n_cranes=1, n_per_crane=1, dep_pct=0)
-    job = inst.jobs[0]
-    d = T.tt(job.slot, inst.crane_pos[0])
+    order = inst.orders[0]
+    d = T.tt(order.slot, inst.crane_pos[0])
     tk, _ = M.richtzeiten(inst)
     sim = simulate(inst, [[0]], [inst.crane_pos[0]], tk)
-    a = max(T.tt(inst.crane_pos[0], M.pos_first(inst, 0)), tk[0]) if job.kind == "D" else None
-    if job.kind == "D":
+    a = max(T.tt(inst.crane_pos[0], M.pos_first(inst, 0)), tk[0]) if order.kind == "D" else None
+    if order.kind == "D":
         assert sim[0] == (120, 120, 120 + T.HAND + d, 120 + T.HAND + d + T.SERVICE) and a == 120
     else:
-        y = T.tt(inst.crane_pos[0], job.slot)
+        y = T.tt(inst.crane_pos[0], order.slot)
         assert sim[0] == (y, y + T.SERVICE + d, y, y + T.SERVICE + d + T.HAND)
 
 

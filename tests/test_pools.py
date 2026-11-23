@@ -98,7 +98,7 @@ def test_kopplungsmatrix_symmetrisch_und_zaehlt_nur_kranuebergreifend():
 
 def test_arbeitslast_von_hand():
     inst = I.make_instance(0, n_cranes=1, n_per_crane=1, dep_pct=0)
-    d = T.tt(inst.jobs[0].slot, inst.crane_pos[0])
+    d = T.tt(inst.orders[0].slot, inst.crane_pos[0])
     assert PL.work(inst) == [2 * d + T.SERVICE + T.HAND]
 
 
@@ -118,8 +118,8 @@ def test_kanten_zwischen_pools_und_fremdauftraege():
     je = PL.make_pools(inst, 6, "per_crane")
     assert PL.cross_arcs(inst, je) == inst.n_deps()          # jeder Kran ein Pool: jede Abhängigkeit ist poolübergreifend
     routes = [[] for _ in range(je.n_sc)]
-    for j in range(inst.n_jobs):
-        routes[je.scs_of(PL.pool_of_job(inst, je, j))[0]].append(j)
+    for j in range(inst.n_orders):
+        routes[je.scs_of(PL.pool_of_order(inst, je, j))[0]].append(j)
     assert PL.foreign_count(inst, je, routes) == 0
     routes[0], routes[-1] = routes[-1], routes[0]
     assert PL.foreign_count(inst, je, routes) > 0

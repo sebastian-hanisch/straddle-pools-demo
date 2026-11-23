@@ -38,7 +38,7 @@ class Pools:
 def work(inst) -> list:
     """Arbeitslast je Kran in Sekunden (nominal, ohne Wartezeiten)."""
     w = [0] * inst.n_cranes
-    for j in inst.jobs:
+    for j in inst.orders:
         w[j.c] += 2 * T.tt(j.slot, inst.crane_pos[j.c]) + T.SERVICE + T.HAND
     return w
 
@@ -47,9 +47,9 @@ def coupling(inst) -> list:
     """Matrix Kran x Kran: Zahl der Abhängigkeiten zwischen Aufträgen der beiden Kräne."""
     c = inst.n_cranes
     mat = [[0] * c for _ in range(c)]
-    for j in inst.jobs:
+    for j in inst.orders:
         for p in j.preds:
-            a, b = inst.jobs[p].c, j.c
+            a, b = inst.orders[p].c, j.c
             if a != b:
                 mat[a][b] += 1
                 mat[b][a] += 1
@@ -132,18 +132,18 @@ def start_positions(inst, pools: Pools) -> tuple:
     return tuple(inst.crane_pos[first[p]] for p in pools.sc_pool)
 
 
-def pool_of_job(inst, pools: Pools, j: int) -> int:
-    return pools.crane_pool[inst.jobs[j].c]
+def pool_of_order(inst, pools: Pools, j: int) -> int:
+    return pools.crane_pool[inst.orders[j].c]
 
 
 def cross_arcs(inst, pools: Pools) -> int:
     """Zahl der Abhängigkeiten, deren Blocker und Abhängiger in verschiedenen Pools liegen."""
-    return sum(1 for job in inst.jobs for p in job.preds if pool_of_job(inst, pools, p) != pool_of_job(inst, pools, job.id))
+    return sum(1 for order in inst.orders for p in order.preds if pool_of_order(inst, pools, p) != pool_of_order(inst, pools, order.id))
 
 
 def foreign_count(inst, pools: Pools, routes) -> int:
     """Zahl der Aufträge, die ein SC außerhalb seines Pools fährt."""
-    return sum(1 for k, r in enumerate(routes) for j in r if pools.sc_pool[k] != pool_of_job(inst, pools, j))
+    return sum(1 for k, r in enumerate(routes) for j in r if pools.sc_pool[k] != pool_of_order(inst, pools, j))
 
 
 def pool_count(n_cranes: int, strategy: str) -> int:

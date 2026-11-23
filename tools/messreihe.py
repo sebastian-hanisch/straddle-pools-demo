@@ -17,8 +17,8 @@ import stp_constants as C  # noqa: E402
 import stp_evaluation as ev  # noqa: E402
 
 SEED0 = 1000                     # Seeds der Messreihe: 1000, 1001, ...; die Preset-Seeds der App sind davon unabhängig gewählt
-LARGE = [dict(name="48 Aufträge", n_cranes=6, jobs_per_crane=8, n_sc=10, instances=4, time_limit=15),
-         dict(name="84 Aufträge", n_cranes=6, jobs_per_crane=14, n_sc=10, instances=3, time_limit=15)]
+LARGE = [dict(name="48 Aufträge", n_cranes=6, orders_per_crane=8, n_sc=10, instances=4, time_limit=15),
+         dict(name="84 Aufträge", n_cranes=6, orders_per_crane=14, n_sc=10, instances=3, time_limit=15)]
 
 
 def record(a: ev.Analysis, seed: int) -> dict:
@@ -28,7 +28,7 @@ def record(a: ev.Analysis, seed: int) -> dict:
     r["proven"] = {k: m.proven for k, m in a.methods.items()}
     r["wall"] = {k: round(m.wall, 2) for k, m in a.methods.items()}
     r["foreign_g3"] = a.methods["g3"].cost.foreign
-    r["cross_arcs"] = int(sum(1 for j in a.inst.jobs for p in j.preds if a.pools.crane_pool[a.inst.jobs[p].c] != a.pools.crane_pool[j.c]))
+    r["cross_arcs"] = int(sum(1 for j in a.inst.orders for p in j.preds if a.pools.crane_pool[a.inst.orders[p].c] != a.pools.crane_pool[j.c]))
     r["reseq"] = bool(a.methods["p0"].resequenced or a.methods["p1"].resequenced)
     return r
 
@@ -73,13 +73,13 @@ def main() -> None:
             print(f"{name} seed {seed}: {time.time() - t:.1f} s", flush=True)
     if not args.no_large and not args.only:
         for spec in LARGE:
-            lg = data["large"].setdefault(spec["name"], {"settings": {k: spec[k] for k in ("n_cranes", "jobs_per_crane", "n_sc", "time_limit")}, "records": []})
+            lg = data["large"].setdefault(spec["name"], {"settings": {k: spec[k] for k in ("n_cranes", "orders_per_crane", "n_sc", "time_limit")}, "records": []})
             done = {r["seed"] for r in lg["records"]}
             for seed in range(SEED0, SEED0 + spec["instances"]):
                 if seed in done:
                     continue
                 t = time.time()
-                base = {**C.PRESETS["Kleiner Hafen"], "n_cranes": spec["n_cranes"], "jobs_per_crane": spec["jobs_per_crane"], "n_sc": spec["n_sc"],
+                base = {**C.PRESETS["Kleiner Hafen"], "n_cranes": spec["n_cranes"], "orders_per_crane": spec["orders_per_crane"], "n_sc": spec["n_sc"],
                         "time_limit": spec["time_limit"], "seed": seed}
                 a = ev.analyse(ev.Settings(**base))
                 lg["records"].append(record(a, seed))

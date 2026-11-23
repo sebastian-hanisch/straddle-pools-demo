@@ -4,8 +4,8 @@ import os
 
 # --- Regler: Bereich, Vorgabe ---
 N_CRANES_RANGE, N_CRANES_DEFAULT = (2, 4), 4
-JOBS_PER_CRANE_RANGE, JOBS_PER_CRANE_DEFAULT = (3, 8), 6
-MAX_JOBS = 32                                  # Kräne x Aufträge je Kran höchstens so viel (live; größere Fälle nur in der vorgerechneten Reihe)
+ORDERS_PER_CRANE_RANGE, ORDERS_PER_CRANE_DEFAULT = (3, 8), 6
+MAX_ORDERS = 32                                  # Kräne x Aufträge je Kran höchstens so viel (live; größere Fälle nur in der vorgerechneten Reihe)
 N_SC_RANGE, N_SC_DEFAULT = (2, 10), 6
 DEP_PCT_RANGE, DEP_PCT_STEP, DEP_PCT_DEFAULT = (0, 40), 5, 30
 MIS_PCT_RANGE, MIS_PCT_STEP, MIS_PCT_DEFAULT = (0, 50), 5, 30
@@ -65,7 +65,7 @@ LINE_COLOR = "#808895"
 CHART_HEIGHT = 380
 
 # --- Presets: Einstellungen je Szenario (fehlende Regler meinen die Vorgabe) ---
-_BASE = dict(n_cranes=N_CRANES_DEFAULT, jobs_per_crane=JOBS_PER_CRANE_DEFAULT, n_sc=N_SC_DEFAULT, dep_pct=DEP_PCT_DEFAULT, mis_pct=MIS_PCT_DEFAULT,
+_BASE = dict(n_cranes=N_CRANES_DEFAULT, orders_per_crane=ORDERS_PER_CRANE_DEFAULT, n_sc=N_SC_DEFAULT, dep_pct=DEP_PCT_DEFAULT, mis_pct=MIS_PCT_DEFAULT,
              strategy=STRATEGY_DEFAULT, w_crane=W_CRANE_DEFAULT, penalty=PENALTY_DEFAULT, time_limit=TIME_LIMIT_DEFAULT, seed=SEED_DEFAULT)
 PRESETS = {
     "Kleiner Hafen": dict(_BASE, seed=1023),

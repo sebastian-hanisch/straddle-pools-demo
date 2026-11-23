@@ -7,7 +7,7 @@ import stp_pdf_export as X
 
 
 def _analyse():
-    return ev.analyse(ev.Settings(n_cranes=3, jobs_per_crane=3, n_sc=4, dep_pct=40, mis_pct=40, time_limit=20, seed=2))
+    return ev.analyse(ev.Settings(n_cranes=3, orders_per_crane=3, n_sc=4, dep_pct=40, mis_pct=40, time_limit=20, seed=2))
 
 
 def _texte(pdf_bytes) -> str:

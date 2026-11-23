@@ -10,8 +10,8 @@ import stp_pools as PL
 import stp_timing as M
 
 
-def fake(g1=0, g2=0, g3=0, p0=0, p1=0, pn=None, foreign=0, proven=True, reseq=False, n_jobs_cranes=(2, 3), pn_wall=2.0):
-    inst = I.make_instance(1, n_cranes=n_jobs_cranes[0], n_per_crane=n_jobs_cranes[1])
+def fake(g1=0, g2=0, g3=0, p0=0, p1=0, pn=None, foreign=0, proven=True, reseq=False, n_orders_cranes=(2, 3), pn_wall=2.0):
+    inst = I.make_instance(1, n_cranes=n_orders_cranes[0], n_per_crane=n_orders_cranes[1])
     pools = PL.make_pools(inst, 2, "per_crane")
 
     def meth(key, obj, f=0, ok=proven, wall=1.0, rs=False):
@@ -77,7 +77,7 @@ def test_zuschnitt_info_und_warnung_an_der_doppelt_grenze():
 def test_leihen_nicht_genutzt_bringt_nichts_und_hilft():
     kind, text = ev.verdict_leihen(fake(10, 90, 90, foreign=0))
     assert kind == "info" and "nicht genutzt" in text and "bleibt bei 90" in text
-    kind, text = ev.verdict_leihen(fake(10, 90, 95, foreign=3, n_jobs_cranes=(2, 3)))
+    kind, text = ev.verdict_leihen(fake(10, 90, 95, foreign=3, n_orders_cranes=(2, 3)))
     assert kind == "info" and "bringt hier nichts" in text and "95 gegen 90" in text and "3 von 6 Aufträgen" in text
     kind, text = ev.verdict_leihen(fake(10, 110, 60, foreign=2))
     assert kind == "success" and "von 110 auf 60" in text and "2 von 6 Aufträgen fahren poolfremd" in text and "50 % der Lücke" in text

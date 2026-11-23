@@ -13,22 +13,22 @@ def greedy_plan(inst, pools, start_pos, tk, ty, mode: str = "fest", w_crane: int
     """Routen je SC. mode: "fest" (nur eigener Pool) oder "leihen" (alle SC dürfen alles, poolfremd kostet die Strafe)."""
     if mode not in ("fest", "leihen"):
         raise ValueError(f"Unbekannter Modus: {mode}")
-    n = inst.n_jobs
+    n = inst.n_orders
     routes = [[] for _ in range(pools.n_sc)]
     last = [None] * pools.n_sc
     placed = {}
     while len(placed) < n:
-        cand = [j for j in range(n) if j not in placed and all(p in placed for p in inst.jobs[j].preds)
+        cand = [j for j in range(n) if j not in placed and all(p in placed for p in inst.orders[j].preds)
                 and (inst.crane_prev(j) is None or inst.crane_prev(j) in placed)]
         j = min(cand, key=lambda x: (tk[x], x))
-        job = inst.jobs[j]
-        d = T.tt(job.slot, inst.crane_pos[job.c])
-        dep_ready = max((placed[p]["y"] + T.SERVICE for p in job.preds), default=0)
+        order = inst.orders[j]
+        d = T.tt(order.slot, inst.crane_pos[order.c])
+        dep_ready = max((placed[p]["y"] + T.SERVICE for p in order.preds), default=0)
         cpj = inst.crane_prev(j)
         ap = placed[cpj]["a"] + T.HAND if cpj is not None else 0
         best = None
         for k in range(pools.n_sc):
-            foreign = pools.sc_pool[k] != PL.pool_of_job(inst, pools, j)
+            foreign = pools.sc_pool[k] != PL.pool_of_order(inst, pools, j)
             if foreign and mode == "fest":
                 continue
             if last[k] is None:
@@ -36,7 +36,7 @@ def greedy_plan(inst, pools, start_pos, tk, ty, mode: str = "fest", w_crane: int
             else:
                 pj = last[k]
                 arr = placed[pj]["e"] + T.tt(M.pos_end(inst, pj), M.pos_first(inst, j))
-            if job.kind == "L":
+            if order.kind == "L":
                 yv = max(arr, dep_ready)
                 av = max(yv + T.SERVICE + d, ap)
                 ev = av + T.HAND

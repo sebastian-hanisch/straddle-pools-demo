@@ -30,7 +30,7 @@ def test_preset_werte_liegen_in_den_reglergrenzen():
 def test_jedes_preset_ist_live_rechenbar():
     for name, preset in C.PRESETS.items():
         s = ev.Settings(**preset)
-        assert s.n_cranes * s.jobs_per_crane <= C.MAX_JOBS, name
+        assert s.n_cranes * s.orders_per_crane <= C.MAX_ORDERS, name
         assert s.n_sc >= PL.pool_count(s.n_cranes, s.strategy), name
 
 
@@ -41,7 +41,7 @@ def test_standard_preset_gleich_den_standardeinstellungen():
 
 def test_setting_specs_decken_jeden_preset_schluessel_ab():
     assert set(P.PRESET_KEYS.values()) == set(P.SETTING_SPECS)
-    assert set(P.PRESET_KEYS) >= {"n_cranes", "jobs_per_crane", "seed", "dep_pct", "mis_pct", "n_sc", "strategy", "w_crane", "penalty", "time_limit"}
+    assert set(P.PRESET_KEYS) >= {"n_cranes", "orders_per_crane", "seed", "dep_pct", "mis_pct", "n_sc", "strategy", "w_crane", "penalty", "time_limit"}
 
 
 def test_url_parameter_sind_eindeutig():

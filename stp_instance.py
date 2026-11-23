@@ -11,7 +11,7 @@ from stp_rng import SplitMix64
 
 
 @dataclass(frozen=True)
-class Job:
+class Order:
     id: int
     c: int                 # Kran
     k: int                 # Position in der Kranreihenfolge (0 = zuerst) (0 = zuerst)
@@ -26,23 +26,23 @@ class Job:
 class Instance:
     n_cranes: int
     n_blocks: int
-    jobs: tuple
-    crane_jobs: tuple      # je Kran: Auftrags-IDs in der Reihenfolge der Positionen
+    orders: tuple
+    crane_orders: tuple      # je Kran: Auftrags-IDs in der Reihenfolge der Positionen
     crane_pos: tuple
 
     @property
-    def n_jobs(self) -> int:
-        return len(self.jobs)
+    def n_orders(self) -> int:
+        return len(self.orders)
 
     def crane_prev(self, j: int):
-        job = self.jobs[j]
-        return self.crane_jobs[job.c][job.k - 1] if job.k > 0 else None
+        order = self.orders[j]
+        return self.crane_orders[order.c][order.k - 1] if order.k > 0 else None
 
     def n_deps(self) -> int:
-        return sum(len(j.preds) for j in self.jobs)
+        return sum(len(j.preds) for j in self.orders)
 
 
-def _creates_cycle(crane_jobs, succs, kinds_c, a: int, b: int) -> bool:
+def _creates_cycle(crane_orders, succs, kinds_c, a: int, b: int) -> bool:
     """Würde die Kante a -> b einen Kreis schließen (Kranketten + Abhängigkeiten)? Gibt es schon einen Weg b ~> a?"""
     seen, stack = set(), [b]
     while stack:
@@ -54,8 +54,8 @@ def _creates_cycle(crane_jobs, succs, kinds_c, a: int, b: int) -> bool:
         seen.add(x)
         stack.extend(succs[x])
         c, k = kinds_c[x]
-        if k + 1 < len(crane_jobs[c]):
-            stack.append(crane_jobs[c][k + 1])
+        if k + 1 < len(crane_orders[c]):
+            stack.append(crane_orders[c][k + 1])
     return False
 
 
@@ -74,7 +74,7 @@ def make_instance(seed: int, n_cranes: int = 4, n_per_crane: int = 6, n_blocks: 
     ks = [i % n_per_crane for i in range(n)]
     kind = ["L" if rng.below(2) == 0 else "D" for _ in range(n)]
     block = [rng.below(n_blocks) for _ in range(n)]
-    crane_jobs = tuple(tuple(range(c * n_per_crane, (c + 1) * n_per_crane)) for c in range(n_cranes))
+    crane_orders = tuple(tuple(range(c * n_per_crane, (c + 1) * n_per_crane)) for c in range(n_cranes))
     where = {i: (cranes[i], ks[i]) for i in range(n)}
     succs = [[] for _ in range(n)]
     preds = [[] for _ in range(n)]
@@ -93,34 +93,34 @@ def make_instance(seed: int, n_cranes: int = 4, n_per_crane: int = 6, n_blocks: 
         first, second = (a, b) if (ks[a] < ks[b] or (ks[a] == ks[b] and rng.below(2) == 0)) else (b, a)
         if rng.below(100) < mis_pct:
             first, second = second, first
-        if _creates_cycle(crane_jobs, succs, where, first, second):
+        if _creates_cycle(crane_orders, succs, where, first, second):
             continue
         used.update((a, b))
         pairs += 1
         block[b] = block[a]            # beide Container stehen im selben Stapel
         succs[first].append(second)
         preds[second].append(first)
-    jobs = tuple(
-        Job(i, cranes[i], ks[i], kind[i], block[i], T.block_position(block[i], n_blocks, n_cranes), tuple(sorted(preds[i])), tuple(sorted(succs[i])))
+    orders = tuple(
+        Order(i, cranes[i], ks[i], kind[i], block[i], T.block_position(block[i], n_blocks, n_cranes), tuple(sorted(preds[i])), tuple(sorted(succs[i])))
         for i in range(n)
     )
-    return Instance(n_cranes, n_blocks, jobs, crane_jobs, tuple(T.crane_position(c) for c in range(n_cranes)))
+    return Instance(n_cranes, n_blocks, orders, crane_orders, tuple(T.crane_position(c) for c in range(n_cranes)))
 
 
 def is_acyclic(inst: Instance) -> bool:
     """Prüft, dass Kranreihenfolgen und Abhängigkeiten zusammen keinen Kreis bilden (Kahn-Verfahren)."""
-    indeg = {j.id: len(j.preds) + (1 if j.k > 0 else 0) for j in inst.jobs}
+    indeg = {j.id: len(j.preds) + (1 if j.k > 0 else 0) for j in inst.orders}
     ready = [j for j, d in indeg.items() if d == 0]
     seen = 0
     while ready:
         x = ready.pop()
         seen += 1
-        nxt = list(inst.jobs[x].succs)
-        job = inst.jobs[x]
-        if job.k + 1 < len(inst.crane_jobs[job.c]):
-            nxt.append(inst.crane_jobs[job.c][job.k + 1])
+        nxt = list(inst.orders[x].succs)
+        order = inst.orders[x]
+        if order.k + 1 < len(inst.crane_orders[order.c]):
+            nxt.append(inst.crane_orders[order.c][order.k + 1])
         for q in nxt:
             indeg[q] -= 1
             if indeg[q] == 0:
                 ready.append(q)
-    return seen == inst.n_jobs
+    return seen == inst.n_orders

@@ -11,7 +11,7 @@
   "Kleiner Hafen": {
    "settings": {
     "n_cranes": 4,
-    "jobs_per_crane": 6,
+    "orders_per_crane": 6,
     "n_sc": 6,
     "dep_pct": 30,
     "mis_pct": 30,
@@ -956,7 +956,7 @@
   "Gute Stapelung": {
    "settings": {
     "n_cranes": 4,
-    "jobs_per_crane": 6,
+    "orders_per_crane": 6,
     "n_sc": 6,
     "dep_pct": 30,
     "mis_pct": 0,
@@ -1901,7 +1901,7 @@
   "Schlechte Stapelung": {
    "settings": {
     "n_cranes": 4,
-    "jobs_per_crane": 6,
+    "orders_per_crane": 6,
     "n_sc": 6,
     "dep_pct": 30,
     "mis_pct": 50,
@@ -2846,7 +2846,7 @@
   "Zu enge Pools": {
    "settings": {
     "n_cranes": 4,
-    "jobs_per_crane": 6,
+    "orders_per_crane": 6,
     "n_sc": 6,
     "dep_pct": 30,
     "mis_pct": 30,
@@ -3791,7 +3791,7 @@
   "Reichlich SC": {
    "settings": {
     "n_cranes": 4,
-    "jobs_per_crane": 6,
+    "orders_per_crane": 6,
     "n_sc": 10,
     "dep_pct": 30,
     "mis_pct": 30,
@@ -4738,7 +4738,7 @@
   "48 Aufträge": {
    "settings": {
     "n_cranes": 6,
-    "jobs_per_crane": 8,
+    "orders_per_crane": 8,
     "n_sc": 10,
     "time_limit": 15
    },
@@ -4872,7 +4872,7 @@
   "84 Aufträge": {
    "settings": {
     "n_cranes": 6,
-    "jobs_per_crane": 14,
+    "orders_per_crane": 14,
     "n_sc": 10,
     "time_limit": 15
    },

@@ -13,24 +13,24 @@ import stp_timing as M
 from test_oracle_timing import simulate
 
 
-def alle_plaene(n_jobs, n_sc):
+def alle_plaene(n_orders, n_sc):
     """Alle Anordnungen der Aufträge auf n_sc geordnete Listen: jede Permutation mit jeder Aufteilung in n_sc Teile (unterschiedliche Anordnungen ergeben nie dieselben Listen)."""
-    for perm in itertools.permutations(range(n_jobs)):
-        for cuts in itertools.combinations_with_replacement(range(n_jobs + 1), n_sc - 1):
-            bounds = (0,) + cuts + (n_jobs,)
+    for perm in itertools.permutations(range(n_orders)):
+        for cuts in itertools.combinations_with_replacement(range(n_orders + 1), n_sc - 1):
+            bounds = (0,) + cuts + (n_orders,)
             yield [list(perm[bounds[i]:bounds[i + 1]]) for i in range(n_sc)]
 
 
 def brute_force(inst, pools, tk, ty, sp, mode, penalty=M.PENALTY_FOREIGN, w_crane=M.WEIGHT_CRANE, w_yard=M.WEIGHT_YARD):
     best = math.inf
-    for routes in alle_plaene(inst.n_jobs, pools.n_sc):
+    for routes in alle_plaene(inst.n_orders, pools.n_sc):
         fremd = PL.foreign_count(inst, pools, routes)
         if mode == "fest" and fremd:
             continue
         sim = simulate(inst, routes, sp, tk)
         if sim is None:
             continue
-        ziel = sum(w_crane * max(0, sim[j][1] - tk[j]) + w_yard * max(0, sim[j][2] - ty[j]) for j in range(inst.n_jobs)) + penalty * fremd
+        ziel = sum(w_crane * max(0, sim[j][1] - tk[j]) + w_yard * max(0, sim[j][2] - ty[j]) for j in range(inst.n_orders)) + penalty * fremd
         best = min(best, ziel)
     return best
 
@@ -49,7 +49,7 @@ def fall(konfig):
     for seed in range(n_seeds):
         inst = I.make_instance(seed, **inst_kw)
         sc = max(n_sc, PL._groups(inst, strategy).__len__())
-        if sc > 3 and inst.n_jobs > 4:
+        if sc > 3 and inst.n_orders > 4:
             continue
         pools = PL.make_pools(inst, sc, strategy)
         yield seed, inst, pools
@@ -135,18 +135,18 @@ def test_startloesung_und_freigabe_und_frist():
     r = MO.solve_joint(inst, pools, tk, ty, "fest", sp, time_limit=30, hint=hint)
     assert r.proven
     # Freigabe: ein Ladeauftrag darf erst später an den Stellplatz (Beginn der Aufnahme = erste Operation)
-    j = next(x for x in range(inst.n_jobs) if inst.jobs[x].kind == "L")
+    j = next(x for x in range(inst.n_orders) if inst.orders[x].kind == "L")
     frei = tk[j] + 100
-    spaet = MO.solve(inst, list(range(inst.n_jobs)), [0, 1], sp, lambda k, x: pools.sc_pool[k] == PL.pool_of_job(inst, pools, x), lambda k, x: False,
+    spaet = MO.solve(inst, list(range(inst.n_orders)), [0, 1], sp, lambda k, x: pools.sc_pool[k] == PL.pool_of_order(inst, pools, x), lambda k, x: False,
                      tk, ty, 30, release={j: frei})
     assert spaet.proven and spaet.first_start[j] >= frei
     # Frist: sie kostet nur, wenn sie überschritten wird
     plan = M.evaluate_plan(inst, MO.routes_list(r, 2), sp, tk)
-    ohne = MO.solve(inst, list(range(inst.n_jobs)), [0, 1], sp, lambda k, x: pools.sc_pool[k] == PL.pool_of_job(inst, pools, x), lambda k, x: False,
-                    tk, ty, 30, deadline={x: 10 ** 6 for x in range(inst.n_jobs)})
+    ohne = MO.solve(inst, list(range(inst.n_orders)), [0, 1], sp, lambda k, x: pools.sc_pool[k] == PL.pool_of_order(inst, pools, x), lambda k, x: False,
+                    tk, ty, 30, deadline={x: 10 ** 6 for x in range(inst.n_orders)})
     assert ohne.obj == r.obj
-    streng = MO.solve(inst, list(range(inst.n_jobs)), [0, 1], sp, lambda k, x: pools.sc_pool[k] == PL.pool_of_job(inst, pools, x), lambda k, x: False,
-                      tk, ty, 30, deadline={x: 0 for x in range(inst.n_jobs)})
+    streng = MO.solve(inst, list(range(inst.n_orders)), [0, 1], sp, lambda k, x: pools.sc_pool[k] == PL.pool_of_order(inst, pools, x), lambda k, x: False,
+                      tk, ty, 30, deadline={x: 0 for x in range(inst.n_orders)})
     assert streng.obj > r.obj and plan is not None
 
 

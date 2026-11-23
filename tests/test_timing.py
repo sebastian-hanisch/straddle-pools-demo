@@ -13,14 +13,14 @@ CRANE0 = (20, 0)
 CRANE1 = (60, 0)
 
 
-def mini(specs, crane_jobs, crane_pos=(CRANE0, CRANE1)):
+def mini(specs, crane_orders, crane_pos=(CRANE0, CRANE1)):
     """specs: Liste (Kran, Position, Art, preds); alle Aufträge liegen am Stellplatz SLOT."""
     succs = {i: [] for i in range(len(specs))}
     for i, (_, _, _, preds) in enumerate(specs):
         for p in preds:
             succs[p].append(i)
-    jobs = tuple(I.Job(i, c, k, kind, 0, SLOT, tuple(preds), tuple(succs[i])) for i, (c, k, kind, preds) in enumerate(specs))
-    return I.Instance(len(crane_jobs), 1, jobs, tuple(tuple(x) for x in crane_jobs), tuple(crane_pos[: len(crane_jobs)]))
+    orders = tuple(I.Order(i, c, k, kind, 0, SLOT, tuple(preds), tuple(succs[i])) for i, (c, k, kind, preds) in enumerate(specs))
+    return I.Instance(len(crane_orders), 1, orders, tuple(tuple(x) for x in crane_orders), tuple(crane_pos[: len(crane_orders)]))
 
 
 def test_fahrzeit_gerundet_symmetrisch_ganzzahlig():
@@ -43,7 +43,7 @@ def test_laden_ein_auftrag_von_hand():
     inst = mini([(0, 0, "L", ())], [[0]])
     tk, ty = M.richtzeiten(inst)
     t = M.evaluate_plan(inst, [[0]], [CRANE0], tk)
-    assert t[0] == M.JobTimes(f=18, a=51, y=18, e=71, sc=0)
+    assert t[0] == M.OrderTimes(f=18, a=51, y=18, e=71, sc=0)
     assert M.cost(t, tk, ty) == M.Cost(0, 0, 0, 0)
 
 
@@ -52,7 +52,7 @@ def test_loeschen_wartet_auf_die_richtzeit():
     inst = mini([(0, 0, "D", ())], [[0]])
     tk, ty = M.richtzeiten(inst)
     t = M.evaluate_plan(inst, [[0]], [CRANE0], tk)
-    assert t[0] == M.JobTimes(f=120, a=120, y=158, e=173, sc=0)
+    assert t[0] == M.OrderTimes(f=120, a=120, y=158, e=173, sc=0)
     assert M.cost(t, tk, ty) == M.Cost(0, 0, 0, 0)
 
 
@@ -80,7 +80,7 @@ def test_zwei_auftraege_ein_sc_nacheinander():
     inst = mini([(0, 0, "L", ()), (0, 1, "L", ())], [[0, 1]])
     tk, ty = M.richtzeiten(inst)
     t = M.evaluate_plan(inst, [[0, 1]], [CRANE0], tk)
-    assert t[1] == M.JobTimes(f=89, a=122, y=89, e=142, sc=0)
+    assert t[1] == M.OrderTimes(f=89, a=122, y=89, e=142, sc=0)
 
 
 def test_kranreihenfolge_verzoegert_die_uebergabe():
@@ -138,13 +138,13 @@ def test_zeiten_sind_monoton_und_erfuellen_die_bedingungen_auf_zufallsplaenen():
         if t is None:
             continue
         geprueft += 1
-        for j, job in enumerate(inst.jobs):
-            d = T.tt(job.slot, inst.crane_pos[job.c])
-            if job.kind == "L":
+        for j, order in enumerate(inst.orders):
+            d = T.tt(order.slot, inst.crane_pos[order.c])
+            if order.kind == "L":
                 assert t[j].f == t[j].y and t[j].a >= t[j].y + T.SERVICE + d and t[j].e == t[j].a + T.HAND
             else:
                 assert t[j].f == t[j].a >= tk[j] and t[j].y >= t[j].a + T.HAND + d and t[j].e == t[j].y + T.SERVICE
-            for p in job.preds:
+            for p in order.preds:
                 assert t[j].y >= t[p].y + T.SERVICE
             cp = inst.crane_prev(j)
             if cp is not None:

@@ -68,8 +68,8 @@ with st.sidebar:
     sidebar_presets()  # Schnellstart oben, das aktive Preset ist hervorgehoben
     st.header("🏗️ Terminal und Aufträge")
     n_cranes = st.slider("Kräne", *bounds("n_cranes"), key="n_cranes", help="Zahl der Kräne am Kai; jeder hat eine feste Auftragsreihenfolge.")
-    jobs_per_crane = st.slider("Aufträge je Kran", *bounds("jobs_per_crane"), key="jobs_per_crane",
-                               help=f"Zahl der Aufträge in der Reihenfolge jedes Krans; höchstens {C.MAX_JOBS} Aufträge insgesamt (größere Fälle nur in der vorgerechneten Reihe).")
+    orders_per_crane = st.slider("Aufträge je Kran", *bounds("orders_per_crane"), key="orders_per_crane",
+                               help=f"Zahl der Aufträge in der Reihenfolge jedes Krans; höchstens {C.MAX_ORDERS} Aufträge insgesamt (größere Fälle nur in der vorgerechneten Reihe).")
     seed = st.number_input("Zufalls-Seed der Instanz", *bounds("seed_input"), key="seed_input", step=1)
     st.button("🎲 Neue Instanz generieren", width="stretch", on_click=randomize_seed)
     st.header("📦 Abhängigkeiten")
@@ -87,7 +87,7 @@ with st.sidebar:
                         help="Nur beim Leihen: Notlösung, wenn ein SC einen Auftrag eines fremden Pools fährt.")
     time_limit = st.slider("Zeitlimit je Modell (s)", *bounds("time_limit"), key="time_limit", help="Danach gilt das beste gefundene Ergebnis ohne Beweis, dass es optimal ist.")
 
-sync_query_params({"n_cranes": int(n_cranes), "jobs_per_crane": int(jobs_per_crane), "seed_input": int(seed), "dep_pct": int(dep_pct), "mis_pct": int(mis_pct),
+sync_query_params({"n_cranes": int(n_cranes), "orders_per_crane": int(orders_per_crane), "seed_input": int(seed), "dep_pct": int(dep_pct), "mis_pct": int(mis_pct),
                    "n_sc": int(n_sc), "strategy": strategy, "w_crane": int(w_crane), "penalty": int(penalty), "time_limit": int(time_limit)})
 
 needed = PL.pool_count(int(n_cranes), strategy)
@@ -96,20 +96,20 @@ if int(n_sc) < needed:
     st.markdown("---")
     st.caption(FOOTER)
     st.stop()
-if int(n_cranes) * int(jobs_per_crane) > C.MAX_JOBS:
-    st.warning(f"{int(n_cranes)} Kräne mit je {int(jobs_per_crane)} Aufträgen sind {int(n_cranes) * int(jobs_per_crane)} Aufträge; live höchstens {C.MAX_JOBS}. Bitte die Auftragszahl je Kran senken.")
+if int(n_cranes) * int(orders_per_crane) > C.MAX_ORDERS:
+    st.warning(f"{int(n_cranes)} Kräne mit je {int(orders_per_crane)} Aufträgen sind {int(n_cranes) * int(orders_per_crane)} Aufträge; live höchstens {C.MAX_ORDERS}. Bitte die Auftragszahl je Kran senken.")
     st.markdown("---")
     st.caption(FOOTER)
     st.stop()
 
-settings = Settings(int(n_cranes), int(jobs_per_crane), int(n_sc), int(dep_pct), int(mis_pct), strategy, int(w_crane), int(penalty), int(time_limit), int(seed))
+settings = Settings(int(n_cranes), int(orders_per_crane), int(n_sc), int(dep_pct), int(mis_pct), strategy, int(w_crane), int(penalty), int(time_limit), int(seed))
 a = _analysis(settings)
 m = a.methods
 
 # --- Ergebnis ------------------------------------------------------------------------------------------------------------------------------
 
 st.markdown("## 🎯 Ergebnis")
-st.caption(f"{a.inst.n_jobs} Aufträge, {a.inst.n_deps()} Abhängigkeiten ({PL.cross_arcs(a.inst, a.pools)} zwischen Pools), {a.pools.n_pools} Pools "
+st.caption(f"{a.inst.n_orders} Aufträge, {a.inst.n_deps()} Abhängigkeiten ({PL.cross_arcs(a.inst, a.pools)} zwischen Pools), {a.pools.n_pools} Pools "
            f"({', '.join(str(len(a.pools.scs_of(p))) for p in range(a.pools.n_pools))} SC). Zielwert = {settings.w_crane} · Kranverspätung + {C.W_YARD} · Yard-Verspätung (Sekunden) + Strafe je poolfremdem Auftrag; kleiner ist besser.")
 c1, c2, c3, c4 = st.columns(4)
 # Delta immer als „mein Wert minus Referenz“; die Farbe regelt delta_color="inverse" (Vorzeichen-Falle, DEMO-PLAYBOOK §2).

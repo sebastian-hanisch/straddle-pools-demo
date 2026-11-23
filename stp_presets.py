@@ -20,7 +20,7 @@ class SettingSpec:
 
 SETTING_SPECS = {
     "n_cranes": SettingSpec("kraene", int, C.N_CRANES_DEFAULT, *C.N_CRANES_RANGE),
-    "jobs_per_crane": SettingSpec("auftraege", int, C.JOBS_PER_CRANE_DEFAULT, *C.JOBS_PER_CRANE_RANGE),
+    "orders_per_crane": SettingSpec("auftraege", int, C.ORDERS_PER_CRANE_DEFAULT, *C.ORDERS_PER_CRANE_RANGE),
     "seed_input": SettingSpec("seed", int, C.SEED_DEFAULT, *C.SEED_RANGE),
     "dep_pct": SettingSpec("stapel", int, C.DEP_PCT_DEFAULT, *C.DEP_PCT_RANGE),
     "mis_pct": SettingSpec("fehlstapel", int, C.MIS_PCT_DEFAULT, *C.MIS_PCT_RANGE),
@@ -31,7 +31,7 @@ SETTING_SPECS = {
     "time_limit": SettingSpec("zeit", int, C.TIME_LIMIT_DEFAULT, *C.TIME_LIMIT_RANGE),
 }
 # Schlüssel der Preset-Wörterbücher (stp_constants.PRESETS) -> Schlüssel im Session State
-PRESET_KEYS = {"n_cranes": "n_cranes", "jobs_per_crane": "jobs_per_crane", "seed": "seed_input", "dep_pct": "dep_pct", "mis_pct": "mis_pct",
+PRESET_KEYS = {"n_cranes": "n_cranes", "orders_per_crane": "orders_per_crane", "seed": "seed_input", "dep_pct": "dep_pct", "mis_pct": "mis_pct",
                "n_sc": "n_sc", "strategy": "strategy", "w_crane": "w_crane", "penalty": "penalty", "time_limit": "time_limit"}
 
 

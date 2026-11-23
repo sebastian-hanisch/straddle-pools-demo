@@ -26,7 +26,7 @@ def test_stufen_sind_zulaessige_vollstaendige_plaene():
         stages = PA.parallel_stages(inst, pools, tk, ty, sp, hint, time_limit=10, rounds=2)
         assert [s.name for s in stages] == ["p0", "p1", "p2"]
         for s in stages:
-            assert sorted(j for r in s.routes for j in r) == list(range(inst.n_jobs))
+            assert sorted(j for r in s.routes for j in r) == list(range(inst.n_orders))
             assert M.evaluate_plan(inst, [list(r) for r in s.routes], sp, tk) is not None
             assert PL.foreign_count(inst, pools, s.routes) == 0            # strikt im eigenen Pool
             assert s.cost == M.cost(s.times, tk, ty, 0)
@@ -69,10 +69,10 @@ def test_neu_sequenzierung_liefert_immer_einen_zulaessigen_plan_und_behaelt_die_
         r = SplitMix64(seed)
         inst = I.make_instance(seed, n_cranes=1 + r.below(4), n_per_crane=1 + r.below(5), dep_pct=r.below(101), mis_pct=r.below(101))
         n_sc = 1 + r.below(4)
-        assign = {j: r.below(n_sc) for j in range(inst.n_jobs)}
-        planned = {j: r.below(500) for j in range(inst.n_jobs)}
+        assign = {j: r.below(n_sc) for j in range(inst.n_orders)}
+        planned = {j: r.below(500) for j in range(inst.n_orders)}
         routes = PA.resequence(inst, assign, planned, n_sc)
-        assert sorted(j for x in routes for j in x) == list(range(inst.n_jobs))
+        assert sorted(j for x in routes for j in x) == list(range(inst.n_orders))
         assert all(assign[j] == k for k, x in enumerate(routes) for j in x)
         tk, _ = M.richtzeiten(inst)
         assert M.evaluate_plan(inst, routes, [inst.crane_pos[0]] * n_sc, tk) is not None
@@ -97,9 +97,9 @@ def test_freigabezeiten_von_hand():
         rel = PA.release_from(inst, pools, times)
         assert rel
         for j, t in rel.items():
-            fremd = [p for p in inst.jobs[j].preds if PL.pool_of_job(inst, pools, p) != PL.pool_of_job(inst, pools, j)]
+            fremd = [p for p in inst.orders[j].preds if PL.pool_of_order(inst, pools, p) != PL.pool_of_order(inst, pools, j)]
             assert fremd and t == max(times[p].y + 15 for p in fremd)
-        assert all(any(PL.pool_of_job(inst, pools, p) != PL.pool_of_job(inst, pools, j) for p in inst.jobs[j].preds) for j in rel)
+        assert all(any(PL.pool_of_order(inst, pools, p) != PL.pool_of_order(inst, pools, j) for p in inst.orders[j].preds) for j in rel)
         return
     pytest.fail("Kein Fall mit Abhängigkeiten gefunden")
 

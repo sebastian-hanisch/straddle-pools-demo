@@ -21,7 +21,7 @@ def test_plan_ist_zulaessig_und_vollstaendig(mode):
     for seed in range(25):
         inst, pools, tk, ty, sp = aufbau(seed)
         routes = H.greedy_plan(inst, pools, sp, tk, ty, mode)
-        assert sorted(j for r in routes for j in r) == list(range(inst.n_jobs))
+        assert sorted(j for r in routes for j in r) == list(range(inst.n_orders))
         assert M.evaluate_plan(inst, routes, sp, tk) is not None
 
 

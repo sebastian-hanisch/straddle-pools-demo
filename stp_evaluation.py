@@ -18,7 +18,7 @@ SERIES_PATH = Path(__file__).resolve().parent / "data" / "messreihe.json"
 @dataclass(frozen=True)
 class Settings:
     n_cranes: int = C.N_CRANES_DEFAULT
-    jobs_per_crane: int = C.JOBS_PER_CRANE_DEFAULT
+    orders_per_crane: int = C.ORDERS_PER_CRANE_DEFAULT
     n_sc: int = C.N_SC_DEFAULT
     dep_pct: int = C.DEP_PCT_DEFAULT
     mis_pct: int = C.MIS_PCT_DEFAULT
@@ -75,7 +75,7 @@ def _from_solve(key, r, inst, pools, sp, tk, ty, hint_plan, weights) -> Method:
 
 def analyse(s: Settings) -> Analysis:
     """Alle sieben Verfahren auf der Instanz zu den Einstellungen. Wirft ValueError, wenn der Zuschnitt mehr Pools als SC hat."""
-    inst = I.make_instance(s.seed, s.n_cranes, s.jobs_per_crane, C.N_BLOCKS, s.dep_pct, s.mis_pct)
+    inst = I.make_instance(s.seed, s.n_cranes, s.orders_per_crane, C.N_BLOCKS, s.dep_pct, s.mis_pct)
     pools = PL.make_pools(inst, s.n_sc, s.strategy)
     tk, ty = M.richtzeiten(inst)
     sp = PL.start_positions(inst, pools)
@@ -152,7 +152,7 @@ def verdict_leihen(a: Analysis):
     """Wann hilft Leihen? G3 gegen G2 und G1."""
     g1, g2, g3 = a.obj("g1"), a.obj("g2"), a.obj("g3")
     foreign = a.methods["g3"].cost.foreign
-    n = a.inst.n_jobs
+    n = a.inst.n_orders
     note = _note(a, ("g2", "g3"))
     if foreign == 0 and g3 == g2:
         return "info", f"Leihen wird hier nicht genutzt: kein Auftrag fährt poolfremd, der Zielwert bleibt bei {de(g2)}.{note}"

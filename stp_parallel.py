@@ -21,7 +21,7 @@ import stp_timing as M
 class Stage:
     name: str
     routes: tuple           # je SC die Auftragsfolge
-    times: tuple            # JobTimes je Auftrag
+    times: tuple            # OrderTimes je Auftrag
     cost: M.Cost
     wall: float             # Rechenzeit bis hierher (längste Pool-Zeit je Durchgang, über die Durchgänge summiert)
     wall_sum: float         # Summe aller Pool-Zeiten (wie bei nacheinander gerechneten Pools)
@@ -33,8 +33,8 @@ def resequence(inst, assign: dict, planned_f: dict, n_sc: int) -> list:
     """Reihenfolge je SC neu bilden: SC-Zuordnung bleibt, Aufträge nach geplanter Startzeit, Vorrang durch Abhängigkeiten und Kranreihenfolge (immer zeitkreisfrei)."""
     placed = set()
     routes = [[] for _ in range(n_sc)]
-    while len(placed) < inst.n_jobs:
-        cand = [j for j in range(inst.n_jobs) if j not in placed and all(p in placed for p in inst.jobs[j].preds)
+    while len(placed) < inst.n_orders:
+        cand = [j for j in range(inst.n_orders) if j not in placed and all(p in placed for p in inst.orders[j].preds)
                 and (inst.crane_prev(j) is None or inst.crane_prev(j) in placed)]
         j = min(cand, key=lambda x: (planned_f[x], x))
         routes[assign[j]].append(j)
@@ -45,19 +45,19 @@ def resequence(inst, assign: dict, planned_f: dict, n_sc: int) -> list:
 def release_from(inst, pools, times) -> dict:
     """Freigabezeiten: für jeden Auftrag mit Blockern in anderen Pools das späteste Ende einer fremden Blocker-Operation laut Plan."""
     release = {}
-    for job in inst.jobs:
-        fr = [times[p].y + T.SERVICE for p in job.preds if PL.pool_of_job(inst, pools, p) != PL.pool_of_job(inst, pools, job.id)]
+    for order in inst.orders:
+        fr = [times[p].y + T.SERVICE for p in order.preds if PL.pool_of_order(inst, pools, p) != PL.pool_of_order(inst, pools, order.id)]
         if fr:
-            release[job.id] = max(fr)
+            release[order.id] = max(fr)
     return release
 
 
 def _pool_pass(inst, pools, sp, tk, ty, time_limit, workers, seed, release, hint, weights):
     routes, assign, planned, walls, proven = {}, {}, {}, [], True
     for p in range(pools.n_pools):
-        jobs = [j.id for j in inst.jobs if PL.pool_of_job(inst, pools, j.id) == p]
+        orders = [j.id for j in inst.orders if PL.pool_of_order(inst, pools, j.id) == p]
         scs = list(pools.scs_of(p))
-        r = MO.solve(inst, jobs, scs, sp, lambda k, j: True, lambda k, j: False, tk, ty, time_limit, workers, seed, hint, release=release or None, **weights)
+        r = MO.solve(inst, orders, scs, sp, lambda k, j: True, lambda k, j: False, tk, ty, time_limit, workers, seed, hint, release=release or None, **weights)
         if r.routes is None:
             return None
         walls.append(r.wall)

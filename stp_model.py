@@ -31,12 +31,12 @@ class SolveResult:
 def _horizon(inst, tk) -> int:
     quay = inst.n_cranes * T.CRANE_SPACING
     far = T.tt((0, 0), (quay, T.YARD_OFFSET + T.YARD_STAGGER))
-    return max(tk) + 600 + inst.n_jobs * (2 * far + T.SERVICE + T.HAND)
+    return max(tk) + 600 + inst.n_orders * (2 * far + T.SERVICE + T.HAND)
 
 
-def solve(inst, jobs, scs, start_pos, elig, foreign, tk, ty, time_limit: float = 10.0, workers: int = 1, seed: int = 1, hint=None,
+def solve(inst, orders, scs, start_pos, elig, foreign, tk, ty, time_limit: float = 10.0, workers: int = 1, seed: int = 1, hint=None,
           release=None, deadline=None, w_crane: int = M.WEIGHT_CRANE, w_yard: int = M.WEIGHT_YARD, penalty: int = M.PENALTY_FOREIGN) -> SolveResult:
-    """Ein Modell über die Aufträge `jobs` und die SC `scs` (Listen von IDs).
+    """Ein Modell über die Aufträge `orders` und die SC `scs` (Listen von IDs).
 
     elig(k, j): darf SC k den Auftrag j fahren? foreign(k, j): zählt das als poolfremd (Strafe)? hint: Startlösung {SC: Auftragsfolge}.
     release: {Auftrag: frühester Beginn der Stellplatz-Operation}; deadline: {Auftrag: spätester Beginn} als weiche Frist (Gewicht w_crane)."""
@@ -44,14 +44,14 @@ def solve(inst, jobs, scs, start_pos, elig, foreign, tk, ty, time_limit: float =
         hint = dict(enumerate(hint))
     m = cp_model.CpModel()
     H = _horizon(inst, tk)
-    idx = {j: i for i, j in enumerate(jobs)}
-    jobset = set(jobs)
+    idx = {j: i for i, j in enumerate(orders)}
+    orderset = set(orders)
     f, e, y, a, tkv, tyv = {}, {}, {}, {}, {}, {}
-    for j in jobs:
-        job = inst.jobs[j]
+    for j in orders:
+        order = inst.orders[j]
         f[j], e[j], y[j], a[j] = (m.NewIntVar(0, H, f"{n}{j}") for n in "feya")
-        d = T.tt(job.slot, inst.crane_pos[job.c])
-        if job.kind == "L":
+        d = T.tt(order.slot, inst.crane_pos[order.c])
+        if order.kind == "L":
             m.Add(f[j] == y[j])
             m.Add(a[j] >= y[j] + T.SERVICE + d)
             m.Add(e[j] == a[j] + T.HAND)
@@ -68,37 +68,37 @@ def solve(inst, jobs, scs, start_pos, elig, foreign, tk, ty, time_limit: float =
         m.Add(tyv[j] >= y[j] - ty[j])
     terms = []
     for j, dl in (deadline or {}).items():
-        if j in jobset:
+        if j in orderset:
             v = m.NewIntVar(0, H, f"dl{j}")
             m.Add(v >= y[j] - dl)
             terms.append(w_crane * v)
-    for ids in inst.crane_jobs:
+    for ids in inst.crane_orders:
         for p, q in zip(ids, ids[1:]):
-            if p in jobset and q in jobset:
+            if p in orderset and q in orderset:
                 m.Add(a[q] >= a[p] + T.HAND)
-    for j in jobs:
-        for p in inst.jobs[j].preds:
-            if p in jobset:
+    for j in orders:
+        for p in inst.orders[j].preds:
+            if p in orderset:
                 m.Add(y[j] >= y[p] + T.SERVICE)
     allp = {}
 
     def closure(j):
         if j not in allp:
             s = set()
-            for p in inst.jobs[j].preds:
+            for p in inst.orders[j].preds:
                 s.add(p)
                 s |= closure(p)
             allp[j] = s
         return allp[j]
 
-    for j in jobs:
+    for j in orders:
         closure(j)
     x, circuits = {}, {}
     for k in scs:
         arcs, lits = [], {}
         unused = m.NewBoolVar(f"unused{k}")
         arcs.append((0, 0, unused))
-        for j in jobs:
+        for j in orders:
             xv = m.NewBoolVar(f"x{k}_{j}")
             x[k, j] = xv
             if not elig(k, j):
@@ -111,8 +111,8 @@ def solve(inst, jobs, scs, start_pos, elig, foreign, tk, ty, time_limit: float =
             l1 = m.NewBoolVar(f"t{k}_{j}")
             lits[j, -1] = l1
             arcs.append((idx[j] + 1, 0, l1))
-        for i in jobs:
-            for j in jobs:
+        for i in orders:
+            for j in orders:
                 if i == j or j in allp[i] or not (elig(k, i) and elig(k, j)):
                     continue
                 lit = m.NewBoolVar(f"r{k}_{i}_{j}")
@@ -122,7 +122,7 @@ def solve(inst, jobs, scs, start_pos, elig, foreign, tk, ty, time_limit: float =
         m.AddCircuit(arcs)
         circuits[k] = (lits, unused)
         if hint is not None:
-            r = [j for j in hint.get(k, ()) if j in jobset]
+            r = [j for j in hint.get(k, ()) if j in orderset]
             chain, prev = set(), -1
             for j in r:
                 chain.add((prev, j))
@@ -131,9 +131,9 @@ def solve(inst, jobs, scs, start_pos, elig, foreign, tk, ty, time_limit: float =
             m.AddHint(unused, 1 if not r else 0)
             for key, lit in lits.items():
                 m.AddHint(lit, 1 if (r and key in chain) else 0)
-            for j in jobs:
+            for j in orders:
                 m.AddHint(x[k, j], 1 if j in r else 0)
-    for j in jobs:
+    for j in orders:
         m.AddExactlyOne([x[k, j] for k in scs])
         for k in scs:
             if foreign(k, j):
@@ -160,7 +160,7 @@ def solve(inst, jobs, scs, start_pos, elig, foreign, tk, ty, time_limit: float =
             cur = nxt.get(cur, -1)
         routes[k] = r
     return SolveResult(routes, s.ObjectiveValue(), s.BestObjectiveBound(), "OPTIMAL" if st == cp_model.OPTIMAL else "FEASIBLE", wall,
-                       {j: s.Value(f[j]) for j in jobs})
+                       {j: s.Value(f[j]) for j in orders})
 
 
 def solve_joint(inst, pools, tk, ty, mode: str, start_pos=None, time_limit: float = 10.0, workers: int = 1, seed: int = 1, hint=None, **weights) -> SolveResult:
@@ -169,7 +169,7 @@ def solve_joint(inst, pools, tk, ty, mode: str, start_pos=None, time_limit: floa
         raise ValueError(f"Unbekannter Modus: {mode}")
     sp = start_pos if start_pos is not None else PL.start_positions(inst, pools)
     def own_pool(k, j):
-        return pools.sc_pool[k] == PL.pool_of_job(inst, pools, j)
+        return pools.sc_pool[k] == PL.pool_of_order(inst, pools, j)
 
     def anywhere(k, j):
         return True
@@ -181,7 +181,7 @@ def solve_joint(inst, pools, tk, ty, mode: str, start_pos=None, time_limit: floa
         return not own_pool(k, j)
 
     elig, foreign = (own_pool, never) if mode == "fest" else (anywhere, other_pool)
-    return solve(inst, list(range(inst.n_jobs)), list(range(pools.n_sc)), sp, elig, foreign, tk, ty, time_limit, workers, seed, hint, **weights)
+    return solve(inst, list(range(inst.n_orders)), list(range(pools.n_sc)), sp, elig, foreign, tk, ty, time_limit, workers, seed, hint, **weights)
 
 
 def routes_list(result: SolveResult, n_sc: int) -> list:

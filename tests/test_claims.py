@@ -108,8 +108,8 @@ def test_grosse_instanzen_g1_und_g3_blieben_beim_startplan():
     spec = SERIES["large"]["84 Aufträge"]
     in_readme("verbesserten den gierigen Startplan in keiner Instanz, nur G2 tat es")
     for r in spec["records"]:
-        s = ev.Settings(**{**C.PRESETS["Kleiner Hafen"], **{k: spec["settings"][k] for k in ("n_cranes", "jobs_per_crane", "n_sc", "time_limit")}, "seed": r["seed"]})
-        inst = I.make_instance(s.seed, s.n_cranes, s.jobs_per_crane, C.N_BLOCKS, s.dep_pct, s.mis_pct)
+        s = ev.Settings(**{**C.PRESETS["Kleiner Hafen"], **{k: spec["settings"][k] for k in ("n_cranes", "orders_per_crane", "n_sc", "time_limit")}, "seed": r["seed"]})
+        inst = I.make_instance(s.seed, s.n_cranes, s.orders_per_crane, C.N_BLOCKS, s.dep_pct, s.mis_pct)
         pools = PL.make_pools(inst, s.n_sc, s.strategy)
         tk, ty = M.richtzeiten(inst)
         sp = PL.start_positions(inst, pools)

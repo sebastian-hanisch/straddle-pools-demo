@@ -20,7 +20,7 @@ WEIGHT_YARD = 1         # Gewicht der Verspätung am Yard
 PENALTY_FOREIGN = 30    # Strafe je poolfremdem Auftrag (Notlösung)
 
 
-class JobTimes(NamedTuple):
+class OrderTimes(NamedTuple):
     f: int
     a: int
     y: int
@@ -36,37 +36,37 @@ class Cost(NamedTuple):
 
 
 def pos_first(inst, j: int) -> tuple:
-    job = inst.jobs[j]
-    return job.slot if job.kind == "L" else inst.crane_pos[job.c]
+    order = inst.orders[j]
+    return order.slot if order.kind == "L" else inst.crane_pos[order.c]
 
 
 def pos_end(inst, j: int) -> tuple:
-    job = inst.jobs[j]
-    return inst.crane_pos[job.c] if job.kind == "L" else job.slot
+    order = inst.orders[j]
+    return inst.crane_pos[order.c] if order.kind == "L" else order.slot
 
 
 def richtzeiten(inst) -> tuple:
     """Richtzeit am Kran = LEAD + Position * CYCLE; Richtzeit am Yard = Kranzeit minus (Laden) bzw. plus (Löschen) die nominale Fahrt samt Operation."""
     tk, ty = [], []
-    for job in inst.jobs:
-        t = T.LEAD + job.k * T.CYCLE
-        d = T.tt(job.slot, inst.crane_pos[job.c])
+    for order in inst.orders:
+        t = T.LEAD + order.k * T.CYCLE
+        d = T.tt(order.slot, inst.crane_pos[order.c])
         tk.append(t)
-        ty.append(t - d - T.SERVICE if job.kind == "L" else t + T.HAND + d)
+        ty.append(t - d - T.SERVICE if order.kind == "L" else t + T.HAND + d)
     return tuple(tk), tuple(ty)
 
 
 def check_routes(inst, routes) -> None:
     """Jeder Auftrag steht genau einmal in genau einer Route."""
     seen = [j for r in routes for j in r]
-    if sorted(seen) != list(range(inst.n_jobs)):
+    if sorted(seen) != list(range(inst.n_orders)):
         raise ValueError("Jeder Auftrag muss genau einmal in den Routen stehen")
 
 
 def evaluate_plan(inst, routes, start_pos, tk):
-    """Früheste Zeiten bei festen Routen; Liste von JobTimes je Auftrag, oder None bei Verklemmung (Zeitkreis)."""
+    """Früheste Zeiten bei festen Routen; Liste von OrderTimes je Auftrag, oder None bei Verklemmung (Zeitkreis)."""
     check_routes(inst, routes)
-    n = inst.n_jobs
+    n = inst.n_orders
     sc_of = [0] * n
     sc_prev = [None] * n
     for k, r in enumerate(routes):
@@ -77,13 +77,13 @@ def evaluate_plan(inst, routes, start_pos, tk):
     for j in range(n):
         for key in "faye":
             t[key, j] = 0
-        if inst.jobs[j].kind == "D":
+        if inst.orders[j].kind == "D":
             t["a", j] = tk[j]
     cons = []      # (Ziel, Quelle oder None, Konstante): t[Ziel] >= t[Quelle] + Konstante
     for j in range(n):
-        job = inst.jobs[j]
-        d = T.tt(job.slot, inst.crane_pos[job.c])
-        if job.kind == "L":
+        order = inst.orders[j]
+        d = T.tt(order.slot, inst.crane_pos[order.c])
+        if order.kind == "L":
             cons += [(("f", j), ("y", j), 0), (("y", j), ("f", j), 0), (("a", j), ("y", j), T.SERVICE + d), (("e", j), ("a", j), T.HAND)]
         else:
             cons += [(("f", j), ("a", j), 0), (("a", j), ("f", j), 0), (("y", j), ("a", j), T.HAND + d), (("e", j), ("y", j), T.SERVICE)]
@@ -92,7 +92,7 @@ def evaluate_plan(inst, routes, start_pos, tk):
         else:
             p = sc_prev[j]
             cons.append((("f", j), ("e", p), T.tt(pos_end(inst, p), pos_first(inst, j))))
-        for p in job.preds:
+        for p in order.preds:
             cons.append((("y", j), ("y", p), T.SERVICE))
         cp = inst.crane_prev(j)
         if cp is not None:
@@ -108,7 +108,7 @@ def evaluate_plan(inst, routes, start_pos, tk):
             break
     else:
         return None
-    return [JobTimes(t["f", j], t["a", j], t["y", j], t["e", j], sc_of[j]) for j in range(n)]
+    return [OrderTimes(t["f", j], t["a", j], t["y", j], t["e", j], sc_of[j]) for j in range(n)]
 
 
 def cost(times, tk, ty, foreign: int = 0, w_crane: int = WEIGHT_CRANE, w_yard: int = WEIGHT_YARD, penalty: int = PENALTY_FOREIGN) -> Cost:

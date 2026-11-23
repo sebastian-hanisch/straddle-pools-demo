@@ -31,14 +31,14 @@ def plan_gantt(inst, pools, method, tk, ty, t_end: int | None = None, title: str
         xs, bases, ys, texts, hovers = [], [], [], [], []
         for k, route in enumerate(method.routes):
             for j in route:
-                if inst.jobs[j].c != c:
+                if inst.orders[j].c != c:
                     continue
                 t = times[j]
                 xs.append(t.e - t.f)
                 bases.append(t.f)
                 ys.append(rows[k])
                 texts.append(str(j + 1))
-                hovers.append(f"Auftrag {j + 1} ({'Laden' if inst.jobs[j].kind == 'L' else 'Löschen'}, Kran {c + 1})<br>Kranübergabe ab {t.a} s (Richtzeit {tk[j]} s)<br>"
+                hovers.append(f"Auftrag {j + 1} ({'Laden' if inst.orders[j].kind == 'L' else 'Löschen'}, Kran {c + 1})<br>Kranübergabe ab {t.a} s (Richtzeit {tk[j]} s)<br>"
                               f"Stellplatz ab {t.y} s (Richtzeit {ty[j]} s)")
         fig.add_trace(go.Bar(orientation="h", x=xs, base=bases, y=ys, text=texts, textposition="inside", insidetextanchor="middle", hovertext=hovers,
                              hoverinfo="text", marker=dict(color=C.CRANE_COLORS[c % 4], line=dict(color=C.LINE_COLOR, width=0.5)), name=f"Kran {c + 1}"))
@@ -56,12 +56,12 @@ def plan_gantt(inst, pools, method, tk, ty, t_end: int | None = None, title: str
         fig.add_trace(go.Scatter(x=lx, y=ly, mode="lines", line=dict(color=C.LATE_COLOR, width=3), name="Verspätung am Kran", hoverinfo="skip"))
     for cross, color, name in ((False, C.LINE_COLOR, "Abhängigkeit (im Pool)"), (True, "#e08a00", "Abhängigkeit (zwischen Pools)")):
         dx, dy = [], []
-        for job in inst.jobs:
-            for p in job.preds:
-                if (PL.pool_of_job(inst, pools, p) != PL.pool_of_job(inst, pools, job.id)) != cross:
+        for order in inst.orders:
+            for p in order.preds:
+                if (PL.pool_of_order(inst, pools, p) != PL.pool_of_order(inst, pools, order.id)) != cross:
                     continue
-                dx += [times[p].y + T.SERVICE, times[job.id].y, None]
-                dy += [rows[times[p].sc], rows[times[job.id].sc], None]
+                dx += [times[p].y + T.SERVICE, times[order.id].y, None]
+                dy += [rows[times[p].sc], rows[times[order.id].sc], None]
         if dx:
             fig.add_trace(go.Scatter(x=dx, y=dy, mode="lines", line=dict(color=color, width=1.5, dash="dot"), name=name, hoverinfo="skip"))
     fig.update_xaxes(title="Zeit (s)", range=[0, t_end or time_axis_end(method)])

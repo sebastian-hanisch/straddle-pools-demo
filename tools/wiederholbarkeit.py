@@ -36,7 +36,7 @@ def main() -> None:
         recs = []
         for rec in series["scenarios"][name]["records"]:
             s = ev.Settings(**{**preset, "seed": rec["seed"]})
-            inst = I.make_instance(s.seed, s.n_cranes, s.jobs_per_crane, C.N_BLOCKS, s.dep_pct, s.mis_pct)
+            inst = I.make_instance(s.seed, s.n_cranes, s.orders_per_crane, C.N_BLOCKS, s.dep_pct, s.mis_pct)
             pools = PL.make_pools(inst, s.n_sc, s.strategy)
             tk, ty = M.richtzeiten(inst)
             sp = PL.start_positions(inst, pools)

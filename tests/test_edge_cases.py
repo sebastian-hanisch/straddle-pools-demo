@@ -9,7 +9,7 @@ import stp_pools as PL
 
 
 def klein(**kw):
-    base = dict(n_cranes=3, jobs_per_crane=3, n_sc=4, strategy="adjacent", time_limit=20)
+    base = dict(n_cranes=3, orders_per_crane=3, n_sc=4, strategy="adjacent", time_limit=20)
     base.update(kw)
     return ev.Settings(**base)
 
@@ -42,7 +42,7 @@ def test_g1_zaehlt_poolfremde_ohne_strafe_g3_mit_strafe():
 
 
 def test_nur_ein_pool_alle_verfahren_gleich():
-    a = ev.analyse(klein(n_cranes=2, jobs_per_crane=3, n_sc=2, strategy="adjacent", seed=1))
+    a = ev.analyse(klein(n_cranes=2, orders_per_crane=3, n_sc=2, strategy="adjacent", seed=1))
     assert a.pools.n_pools == 1
     obj = {k: m.cost.obj for k, m in a.methods.items()}
     assert obj["g1"] == obj["g2"] == obj["g3"] == obj["p0"] == obj["p1"] == obj["pn"]
@@ -55,21 +55,21 @@ def test_ohne_abhaengigkeiten_parallel_gleich_gesamt():
 
 
 def test_kleinste_instanz_ein_kran_ein_sc_ein_auftrag():
-    s = ev.Settings(n_cranes=1, jobs_per_crane=1, n_sc=1, strategy="per_crane", dep_pct=0, mis_pct=0, seed=0)
+    s = ev.Settings(n_cranes=1, orders_per_crane=1, n_sc=1, strategy="per_crane", dep_pct=0, mis_pct=0, seed=0)
     a = ev.analyse(s)
-    assert a.inst.n_jobs == 1 and all(m.cost.obj == a.methods["g2"].cost.obj for m in a.methods.values())
+    assert a.inst.n_orders == 1 and all(m.cost.obj == a.methods["g2"].cost.obj for m in a.methods.values())
 
 
 def test_so_viele_sc_wie_pools_geht_einer_weniger_nicht():
     inst = I.make_instance(0, n_cranes=4, n_per_crane=2)
     PL.make_pools(inst, 4, "per_crane")
     with pytest.raises(ValueError):
-        ev.analyse(ev.Settings(n_cranes=4, jobs_per_crane=2, n_sc=3, strategy="per_crane"))
+        ev.analyse(ev.Settings(n_cranes=4, orders_per_crane=2, n_sc=3, strategy="per_crane"))
 
 
 def test_zeitlimit_ergebnisse_tragen_den_status_zeitlimit_nie_bewiesen(monkeypatch):
     monkeypatch.setenv(C.MAX_SECONDS_ENV, "0.05")
-    a = ev.analyse(ev.Settings(n_cranes=4, jobs_per_crane=8, n_sc=6, dep_pct=40, mis_pct=40, seed=5))
+    a = ev.analyse(ev.Settings(n_cranes=4, orders_per_crane=8, n_sc=6, dep_pct=40, mis_pct=40, seed=5))
     for key in ("g1", "g2", "g3"):
         m = a.methods[key]
         assert m.status in ("Zeitlimit", "Startlösung", "bewiesen")
@@ -83,5 +83,5 @@ def test_ergebnis_ist_zulaessig_fuer_jedes_verfahren():
     a = ev.analyse(klein(seed=6, dep_pct=40, mis_pct=50))
     for key, m in a.methods.items():
         routes = [list(r) for r in m.routes]
-        assert sorted(j for r in routes for j in r) == list(range(a.inst.n_jobs)), key
+        assert sorted(j for r in routes for j in r) == list(range(a.inst.n_orders)), key
         assert M.evaluate_plan(a.inst, routes, a.start_pos, a.tk) is not None, key

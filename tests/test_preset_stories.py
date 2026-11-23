@@ -40,7 +40,7 @@ def test_kleiner_hafen_ist_typisch(analysen):
 def test_gute_stapelung_hat_keine_fehlstapel(analysen):
     a = analysen["Gute Stapelung"]
     assert a.settings.mis_pct == 0
-    assert all(a.inst.jobs[p].k <= j.k for j in a.inst.jobs for p in j.preds)
+    assert all(a.inst.orders[p].k <= j.k for j in a.inst.orders for p in j.preds)
 
 
 def test_schlechte_stapelung_zeigt_den_aufschlag(analysen):

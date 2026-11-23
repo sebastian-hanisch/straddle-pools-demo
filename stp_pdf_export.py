@@ -70,7 +70,7 @@ def generate_pdf(a: ev.Analysis, compress: bool = True) -> bytes:
     pdf.ln(3)
 
     heading("Szenario")
-    para(f"{a.inst.n_cranes} Kräne mit je {s.jobs_per_crane} Aufträgen ({a.inst.n_jobs} Aufträge), {s.n_sc} SC, Zuschnitt: {PL.STRATEGY_LABELS[s.strategy]} "
+    para(f"{a.inst.n_cranes} Kräne mit je {s.orders_per_crane} Aufträgen ({a.inst.n_orders} Aufträge), {s.n_sc} SC, Zuschnitt: {PL.STRATEGY_LABELS[s.strategy]} "
          f"({a.pools.n_pools} Pools, SC je Pool: {', '.join(str(len(a.pools.scs_of(p))) for p in range(a.pools.n_pools))}). "
          f"{s.dep_pct} % der Aufträge in Stapelpaaren, davon {s.mis_pct} % entgegen der Bedarfsreihenfolge ({a.inst.n_deps()} Abhängigkeiten, "
          f"{PL.cross_arcs(a.inst, a.pools)} zwischen Pools). Zufalls-Seed {s.seed}.")
